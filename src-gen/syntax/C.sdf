@@ -1,0 +1,7 @@
+module C
+imports Declarations Expressions ExternalDefinitions Keywords Lexical
+        Preprocessor Statements
+
+exports
+  context-free start-symbols
+    TranslationUnit

@@ -1,0 +1,14 @@
+module ExternalDefinitions
+imports Declarations Statements
+
+exports
+  context-free syntax
+    "ExternalDecl+;" "{\"\\n\"}"               -> TranslationUnit {cons("TranslationUnit")}
+    FuncDef                                    -> ExternalDecl    
+    Decl                                       -> ExternalDecl    
+    DeclSpec* FuncDeclarator Decl* CompoundStm -> FuncDef         {cons("FuncDef")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> TranslationUnit {cons("COMPLETION-TranslationUnit")}
+    CONTENTCOMPLETE -> ExternalDecl    {cons("COMPLETION-ExternalDecl")}
+    CONTENTCOMPLETE -> FuncDef         {cons("COMPLETION-FuncDef")}

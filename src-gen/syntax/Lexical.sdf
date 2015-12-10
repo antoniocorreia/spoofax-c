@@ -1,0 +1,112 @@
+module Lexical
+imports Keywords
+
+exports
+  lexical syntax
+    [\ \t\n\r\12]                   -> LAYOUT   
+    "/*" ( ~[\*] | Asterisk )* "*/" -> Comment  
+    Comment                         -> LAYOUT   
+    [\*]                            -> Asterisk 
+    "//" ~[\n]* [\n]                -> Comment  
+                                    -> EOF      
+
+  lexical restrictions
+    Asterisk -/- [\/]
+    EOF -/- ~[]
+
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n\r\12]
+    LAYOUT? -/- [\/] . [\/]
+    LAYOUT? -/- [\/] . [\*]
+
+  lexical syntax
+    [\,]   -> Comma 
+    [\+\-] -> Sign  
+
+  lexical syntax
+    [a-zA-Z\_] | UniCharName ( [a-zA-Z\_0-9] | UniCharName )* -> Id 
+    Keyword                                                   -> Id {reject}
+
+  lexical restrictions
+    Id -/- [a-zA-Z\_0-9]
+
+  context-free syntax
+    CharConst   -> Constant {cons("CharConst")}
+    IntConst    -> Constant {cons("IntConst")}
+    OctConst    -> Constant {cons("OctConst")}
+    HexConst    -> Constant {cons("HexConst")}
+    FloatConst  -> Constant {cons("FloatConst")}
+    StringConst -> Constant {cons("StringConst")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> Constant {cons("COMPLETION-Constant")}
+
+  lexical syntax
+    NonzeroDigit Digit* IntSuffix? -> IntConst       
+    [0] IntSuffix?                 -> IntConst       
+    UnsignedSuffix LongLongSuffix  -> IntSuffix      
+    [uU]                           -> UnsignedSuffix 
+    [lL]                           -> LongSuffix     
+    "ll"                           -> LongLongSuffix 
+    "LL"                           -> LongLongSuffix 
+    [0-9]                          -> Digit          
+    [1-9]                          -> NonzeroDigit   
+
+  lexical restrictions
+    IntConst -/- [0-9ulUL]
+
+  lexical syntax
+    [0] OctDigit+ -> OctConst 
+    [0-7]         -> OctDigit 
+
+  lexical restrictions
+    OctConst -/- [0-7]
+
+  lexical syntax
+    [0] HexPrefix HexDigit+ -> HexConst  
+    [Xx]                    -> HexPrefix 
+    [0-9a-fA-F]             -> HexDigit  
+
+  lexical restrictions
+    HexConst -/- [0-9a-fA-FxX]
+
+  lexical syntax
+    DecFloatConst                                  -> FloatConst    
+    HexFloatConst                                  -> FloatConst    
+    FracConst ExpPart? FloatSuffix?                -> DecFloatConst 
+    Digit+ ExpPart FloatSuffix?                    -> DecFloatConst 
+    Digit* "." Digit+                              -> FracConst     
+    Digit+ "."                                     -> FracConst     
+    [eE] Sign? Digit+                              -> ExpPart       
+    [pP] Sign? Digit+                              -> BinExpPart    
+    HexPrefix HexFracConst BinExpPart FloatSuffix? -> HexFloatConst 
+    HexPrefix HexDigit+ BinExpPart FloatSuffix?    -> HexFloatConst 
+    HexDigit* "." HexDigit+                        -> HexFracConst  
+    HexDigit+ "."                                  -> HexFracConst  
+    [flFL]                                         -> FloatSuffix   
+
+  lexical restrictions
+    FloatConst -/- [0-9a-fA-FxXflFL]
+
+  lexical syntax
+    "\\u" HexQuad                       -> UniCharName 
+    "\\U" HexQuad HexQuad               -> UniCharName 
+    HexDigit HexDigit HexDigit HexDigit -> HexQuad     
+
+  lexical syntax
+    [\\] [\'\"\?\\abfnrtv]            -> EscSeq 
+    [\\] OctDigit OctDigit? OctDigit? -> EscSeq 
+    [\\] HexPrefix HexDigit+          -> EscSeq 
+    UniCharName                       -> EscSeq 
+
+  lexical syntax
+    [LuU]? "'" Char+ "'" -> CharConst 
+    ~[\\\'\n]            -> Char      
+    EscSeq               -> Char      
+
+  lexical syntax
+    EncPrefix? "\"" SChar* "\"" -> StringConst 
+    "u8"                        -> EncPrefix   
+    [uUL]                       -> EncPrefix   
+    ~[\\\"\n]                   -> SChar       
+    EscSeq                      -> SChar       

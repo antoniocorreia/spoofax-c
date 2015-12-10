@@ -1,0 +1,1 @@
+Module("runtime/properties/debug",[Imports([(),(),()]),Rules([SDefT("properties-console-msg-enable",[],[],[]),SDefT("properties-console-msg",[],[VarDec("msg",ConstType(SortNoArgs("ATerm")))],[]),SDefT("properties-warning-task-disable",[],[],[]),SDefT("properties-warning-task",[],[VarDec("ctx",ConstType(SortNoArgs("ATerm"))),VarDec("msg",ConstType(SortNoArgs("ATerm")))],[])])])

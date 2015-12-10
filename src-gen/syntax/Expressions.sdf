@@ -1,0 +1,146 @@
+module Expressions
+imports Declarations Lexical
+
+exports
+  context-free syntax
+    Id                                               -> PrimExp    {cons("DeclRef")}
+    Constant                                         -> PrimExp    
+    GenSelect                                        -> PrimExp    
+    "(" Exp ")"                                      -> PrimExp    {bracket}
+    "_Generic" "(" AssignExp "," {GenAssoc ","}+ ")" -> GenSelect  {cons("GenSelect")}
+    TypeName ":" AssignExp                           -> GenAssoc   {cons("GenTypeAssoc")}
+    "default" ":" AssignExp                          -> GenAssoc   {cons("GenDefaultAssoc")}
+    PrimExp                                          -> PostfixExp 
+    PostfixExp "[" Exp "]"                           -> PostfixExp {cons("ArrayAccess")}
+    PostfixExp "(" {AssignExp ","}* ")"              -> PostfixExp {cons("Call")}
+    PostfixExp "." Id                                -> PostfixExp {cons("Access")}
+    PostfixExp "->" Id                               -> PostfixExp {cons("DerefAccess")}
+    PostfixExp "++"                                  -> PostfixExp {cons("PostInc")}
+    PostfixExp "--"                                  -> PostfixExp {cons("PostDec")}
+    PostfixExp                                       -> UnaryExp   
+    "++" UnaryExp                                    -> UnaryExp   {cons("PreInc")}
+    "--" UnaryExp                                    -> UnaryExp   {cons("PreDec")}
+    UnaryOp CastExp                                  -> UnaryExp   {cons("UnaryOp")}
+    "sizeof" UnaryExp                                -> UnaryExp   {cons("ExpSizeof")}
+    "sizeof" "(" TypeName ")"                        -> UnaryExp   {cons("TypeSizeof")}
+    "_Alignof" "(" TypeName ")"                      -> UnaryExp   {cons("Alignof")}
+    "&"                                              -> UnaryOp    {cons("Ref")}
+    "*"                                              -> UnaryOp    {cons("Deref")}
+    "+"                                              -> UnaryOp    {cons("Pos")}
+    "-"                                              -> UnaryOp    {cons("Neg")}
+    "~"                                              -> UnaryOp    {cons("BNot")}
+    "!"                                              -> UnaryOp    {cons("LNot")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> PrimExp    {cons("COMPLETION-PrimExp")}
+    CONTENTCOMPLETE -> GenSelect  {cons("COMPLETION-GenSelect")}
+    CONTENTCOMPLETE -> GenAssoc   {cons("COMPLETION-GenAssoc")}
+    CONTENTCOMPLETE -> PostfixExp {cons("COMPLETION-PostfixExp")}
+    CONTENTCOMPLETE -> UnaryExp   {cons("COMPLETION-UnaryExp")}
+    CONTENTCOMPLETE -> UnaryOp    {cons("COMPLETION-UnaryOp")}
+
+  lexical restrictions
+    "+" -/- [\+]
+    "-" -/- [\-]
+
+  context-free syntax
+    UnaryExp                 -> CastExp  
+    "(" TypeName ")" CastExp -> CastExp  {cons("Cast")}
+    CastExp                  -> MulExp   
+    MulExp MulOp CastExp     -> MulExp   {cons("BinOp")}
+    "*"                      -> MulOp    {cons("Mul")}
+    "/"                      -> MulOp    {cons("Div")}
+    "%"                      -> MulOp    {cons("Mod")}
+    MulExp                   -> AddExp   
+    AddExp AddOp MulExp      -> AddExp   {cons("BinOp")}
+    "+"                      -> AddOp    {cons("Add")}
+    "-"                      -> AddOp    {cons("Sub")}
+    AddExp                   -> ShiftExp 
+    ShiftExp ShiftOp AddExp  -> ShiftExp {cons("BinOp")}
+    "<<"                     -> ShiftOp  {cons("LShift")}
+    ">>"                     -> ShiftOp  {cons("RShift")}
+    ShiftExp                 -> RelExp   
+    RelExp RelOp ShiftExp    -> RelExp   {cons("BinOp")}
+    "<"                      -> RelOp    {cons("Lt")}
+    ">"                      -> RelOp    {cons("Gt")}
+    "<="                     -> RelOp    {cons("Lte")}
+    ">="                     -> RelOp    {cons("Gte")}
+    RelExp                   -> EqExp    
+    EqExp EqOp RelExp        -> EqExp    {cons("BinOp")}
+    "=="                     -> EqOp     {cons("Eq")}
+    "!="                     -> EqOp     {cons("Neq")}
+    EqExp                    -> BAndExp  
+    BAndExp BAndOp EqExp     -> BAndExp  {cons("BinOp")}
+    "&"                      -> BAndOp   {cons("BAnd")}
+    BAndExp                  -> BXorExp  
+    BXorExp BXorOp BAndExp   -> BXorExp  {cons("BinOp")}
+    "^"                      -> BXorOp   {cons("BXor")}
+    BXorExp                  -> BOrExp   
+    BOrExp BOrOp BXorExp     -> BOrExp   {cons("BinOp")}
+    "|"                      -> BOrOp    {cons("BOr")}
+    BOrExp                   -> LAndExp  
+    LAndExp LAndOp BOrExp    -> LAndExp  {cons("BinOp")}
+    "&&"                     -> LAndOp   {cons("LAnd")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> CastExp  {cons("COMPLETION-CastExp")}
+    CONTENTCOMPLETE -> MulExp   {cons("COMPLETION-MulExp")}
+    CONTENTCOMPLETE -> MulOp    {cons("COMPLETION-MulOp")}
+    CONTENTCOMPLETE -> AddExp   {cons("COMPLETION-AddExp")}
+    CONTENTCOMPLETE -> AddOp    {cons("COMPLETION-AddOp")}
+    CONTENTCOMPLETE -> ShiftExp {cons("COMPLETION-ShiftExp")}
+    CONTENTCOMPLETE -> ShiftOp  {cons("COMPLETION-ShiftOp")}
+    CONTENTCOMPLETE -> RelExp   {cons("COMPLETION-RelExp")}
+    CONTENTCOMPLETE -> RelOp    {cons("COMPLETION-RelOp")}
+    CONTENTCOMPLETE -> EqExp    {cons("COMPLETION-EqExp")}
+    CONTENTCOMPLETE -> EqOp     {cons("COMPLETION-EqOp")}
+    CONTENTCOMPLETE -> BAndExp  {cons("COMPLETION-BAndExp")}
+    CONTENTCOMPLETE -> BAndOp   {cons("COMPLETION-BAndOp")}
+    CONTENTCOMPLETE -> BXorExp  {cons("COMPLETION-BXorExp")}
+    CONTENTCOMPLETE -> BXorOp   {cons("COMPLETION-BXorOp")}
+    CONTENTCOMPLETE -> BOrExp   {cons("COMPLETION-BOrExp")}
+    CONTENTCOMPLETE -> BOrOp    {cons("COMPLETION-BOrOp")}
+    CONTENTCOMPLETE -> LAndExp  {cons("COMPLETION-LAndExp")}
+    CONTENTCOMPLETE -> LAndOp   {cons("COMPLETION-LAndOp")}
+
+  lexical restrictions
+    "&" -/- [\&]
+
+  context-free syntax
+    LAndExp              -> LOrExp 
+    LOrExp LOrOp LAndExp -> LOrExp {cons("BinOp")}
+    "||"                 -> LOrOp  {cons("LOr")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> LOrExp {cons("COMPLETION-LOrExp")}
+    CONTENTCOMPLETE -> LOrOp  {cons("COMPLETION-LOrOp")}
+
+  lexical restrictions
+    "|" -/- [\|]
+
+  context-free syntax
+    LOrExp                      -> CondExp   
+    LOrExp "?" Exp ":" CondExp  -> CondExp   {cons("IfExp")}
+    CondExp                     -> AssignExp 
+    UnaryExp AssignOp AssignExp -> AssignExp {cons("AssignExp")}
+    "="                         -> AssignOp  {cons("Eq")}
+    "*="                        -> AssignOp  {cons("Mul")}
+    "/="                        -> AssignOp  {cons("Div")}
+    "%="                        -> AssignOp  {cons("Mod")}
+    "+="                        -> AssignOp  {cons("Add")}
+    "-="                        -> AssignOp  {cons("Sub")}
+    "<<="                       -> AssignOp  {cons("LShift")}
+    ">>="                       -> AssignOp  {cons("RShift")}
+    "&="                        -> AssignOp  {cons("BAnd")}
+    "^="                        -> AssignOp  {cons("BXor")}
+    "|="                        -> AssignOp  {cons("BOr")}
+    AssignExp                   -> Exp       
+    Exp "," AssignExp           -> Exp       {cons("Comma")}
+    CondExp                     -> ConstExp  
+
+  context-free syntax
+    CONTENTCOMPLETE -> CondExp   {cons("COMPLETION-CondExp")}
+    CONTENTCOMPLETE -> AssignExp {cons("COMPLETION-AssignExp")}
+    CONTENTCOMPLETE -> AssignOp  {cons("COMPLETION-AssignOp")}
+    CONTENTCOMPLETE -> Exp       {cons("COMPLETION-Exp")}
+    CONTENTCOMPLETE -> ConstExp  {cons("COMPLETION-ConstExp")}

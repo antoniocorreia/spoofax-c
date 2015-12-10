@@ -1,0 +1,1 @@
+Module("runtime/properties/eq",[Signature([Constructors([OpDecl("Eq",ConstType(SortNoArgs("Relation")))])]),Strategies([SDefT("nabl-reflexive",[],[],[]),SDefT("nabl-property-eq",[],[],[]),SDefT("nabl-property-eq",[],[VarDec("kind",ConstType(SortNoArgs("ATerm"))),VarDec("rel",ConstType(SortNoArgs("ATerm"))),VarDec("expected",ConstType(SortNoArgs("ATerm")))],[])])])

@@ -1,0 +1,11 @@
+module C-Completions
+
+imports src-gen/completions/C-esv
+
+
+completions
+  // Semantic (identifier) completion:   
+                                         
+  completion proposer                  : editor-complete
+                                         
+  //completion trigger                   : ":"

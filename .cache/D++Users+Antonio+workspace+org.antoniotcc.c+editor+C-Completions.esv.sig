@@ -1,0 +1,1 @@
+Module("C-Completions",Imports([Import("src-gen/completions/C-esv")]),[Completions("",[CompletionProposer([],Strategy("editor-complete"))])])

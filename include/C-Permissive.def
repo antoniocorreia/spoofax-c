@@ -1,0 +1,677 @@
+definition
+
+module Statements
+imports Declarations Expressions Lexical
+
+exports
+  sorts WATER WATERTOKEN WATERTOKENSTART WATERTOKENSEPARATOR WATERTOKENSTAR
+
+  lexical syntax
+    [A-Za-z0-9\_]                  -> WATERTOKENSTART          {recover, avoid}
+    WATERTOKENSTART [A-Za-z0-9\_]* -> WATERTOKEN               
+    ~[A-Za-z0-9\_\ \t\12\r\n\*]    -> WATERTOKENSEPARATOR      {recover, avoid}
+    "*"                            -> WATERTOKENSTAR           {recover, avoid}
+    WATERTOKEN                     -> WATER                    
+    WATERTOKENSEPARATOR            -> WATER                    
+    WATERTOKENSTAR                 -> WATER                    
+                                   -> WATEREOF                 
+    "completion123"                -> COMPLETIONPREFIX         {completion}
+    "|#WATERTOKENSTAR|"            -> WATERTOKENSTAR           {completion}
+    "|#LabeledStm|"                -> LabeledStm               {completion}
+    "|#CompoundStm|"               -> CompoundStm              {completion}
+    "|#ExpStm|"                    -> ExpStm                   {completion}
+    "|#SelectionStm|"              -> SelectionStm             {completion}
+    "|#IterStm|"                   -> IterStm                  {completion}
+    "|#JmpStm|"                    -> JmpStm                   {completion}
+    "|#PPHeaderName|"              -> PPHeaderName             {completion}
+    "|#ControlLine|"               -> ControlLine              {completion}
+    "|#Comment|"                   -> Comment                  {completion}
+    "|#LongLongSuffix|"            -> LongLongSuffix           {completion}
+    "|#FracConst|"                 -> FracConst                {completion}
+    "|#HexFracConst|"              -> HexFracConst             {completion}
+    "|#UniCharName|"               -> UniCharName              {completion}
+    "|#CharConst|"                 -> CharConst                {completion}
+    "|#StringConst|"               -> StringConst              {completion}
+    "|#EncPrefix|"                 -> EncPrefix                {completion}
+    "|#Keyword|"                   -> Keyword                  {completion}
+    "|#TranslationUnit|"           -> TranslationUnit          {completion}
+    "|#PrimExp|"                   -> PrimExp                  {completion}
+    "|#GenSelect|"                 -> GenSelect                {completion}
+    "|#GenAssoc|"                  -> GenAssoc                 {completion}
+    "|#PostfixExp|"                -> PostfixExp               {completion}
+    "|#UnaryExp|"                  -> UnaryExp                 {completion}
+    "|#UnaryOp|"                   -> UnaryOp                  {completion}
+    "|#CastExp|"                   -> CastExp                  {completion}
+    "|#MulOp|"                     -> MulOp                    {completion}
+    "|#AddOp|"                     -> AddOp                    {completion}
+    "|#ShiftOp|"                   -> ShiftOp                  {completion}
+    "|#RelOp|"                     -> RelOp                    {completion}
+    "|#EqOp|"                      -> EqOp                     {completion}
+    "|#BAndOp|"                    -> BAndOp                   {completion}
+    "|#BXorOp|"                    -> BXorOp                   {completion}
+    "|#BOrOp|"                     -> BOrOp                    {completion}
+    "|#LAndOp|"                    -> LAndOp                   {completion}
+    "|#LOrOp|"                     -> LOrOp                    {completion}
+    "|#CondExp|"                   -> CondExp                  {completion}
+    "|#AssignOp|"                  -> AssignOp                 {completion}
+    "|#Exp|"                       -> Exp                      {completion}
+    "|#Decl|"                      -> Decl                     {completion}
+    "|#DeclSpecs|"                 -> DeclSpecs                {completion}
+    "|#InitDeclarator|"            -> InitDeclarator           {completion}
+    "|#StoreClassSpec|"            -> StoreClassSpec           {completion}
+    "|#TypeSpec|"                  -> TypeSpec                 {completion}
+    "|#StructOrUnionSpec|"         -> StructOrUnionSpec        {completion}
+    "|#StructDecl|"                -> StructDecl               {completion}
+    "|#StructDeclarator|"          -> StructDeclarator         {completion}
+    "|#StructBitfieldDeclarator|"  -> StructBitfieldDeclarator {completion}
+    "|#EnumSpec|"                  -> EnumSpec                 {completion}
+    "|#Enumerator|"                -> Enumerator               {completion}
+    "|#AtomicTypeSpec|"            -> AtomicTypeSpec           {completion}
+    "|#TypeQualifier|"             -> TypeQualifier            {completion}
+    "|#FuncSpec|"                  -> FuncSpec                 {completion}
+    "|#AlignSpec|"                 -> AlignSpec                {completion}
+    "|#DirectDeclarator|"          -> DirectDeclarator         {completion}
+    "|#DirectFuncDeclarator|"      -> DirectFuncDeclarator     {completion}
+    "|#Ptr|"                       -> Ptr                      {completion}
+    "|#ParamTypeList|"             -> ParamTypeList            {completion}
+    "|#ParamList|"                 -> ParamList                {completion}
+    "|#DirectAbstractDeclarator|"  -> DirectAbstractDeclarator {completion}
+    "|#Initializer|"               -> Initializer              {completion}
+    "|#Designation|"               -> Designation              {completion}
+    "|#Designator|"                -> Designator               {completion}
+    "|#StaticAssertDecl|"          -> StaticAssertDecl         {completion}
+
+  lexical restrictions
+    WATERTOKEN -/- [A-Za-z0-9\_]
+    WATERTOKENSTAR -/- [\/]
+
+  context-free syntax
+    WATER -> LAYOUT {cons("WATER")}
+
+  (
+
+  sorts WATEREOF
+
+  lexical restrictions
+    WATEREOF -/- ~[]
+
+  lexical syntax
+    %% Lexical insertion recovery rules                            
+                                               -> "goto"           {recover, cons("INSERTION")}
+                                               -> "return"         {recover, cons("INSERTION")}
+    "\""                                       -> INSERTOPENQUOTE  {recover}
+    INSERTOPENQUOTE PPQChar+ "\n"              -> PPHeaderName     {cons("INSERTEND")}
+    INSERTOPENQUOTE PPQChar+ WATEREOF          -> PPHeaderName     {cons("INSERTEND")}
+    "/*"                                       -> INSERTSTART      {recover}
+    INSERTSTART ( ~[\*] | Asterisk )* WATEREOF -> Comment          {cons("INSERTEND")}
+                                               -> "ExternalDecl+;" {recover, cons("INSERTION")}
+                                               -> "{\"\\n\"}"      {recover, cons("INSERTION")}
+                                               -> "\"}"            {recover, cons("INSERTION")}
+                                               -> "_Alignas"       {recover, cons("INSERTION")}
+                                               -> ")"              {recover, cons("INSERTION")}
+                                               -> "}"              {recover, cons("INSERTION")}
+                                               -> ","              {recover, cons("INSERTION")}
+                                               -> "]"              {recover, cons("INSERTION")}
+                                               -> "["              {recover, cons("INSERTION")}
+                                               -> "."              {recover, cons("INSERTION")}
+                                               -> ";"              {recover, cons("INSERTION")}
+
+  syntax
+    %% Kernel syntax insertion recovery rules   
+
+  )
+
+  (
+
+  context-free syntax
+    LabeledStm                               -> Stm          
+    CompoundStm                              -> Stm          
+    ExpStm                                   -> Stm          
+    SelectionStm                             -> Stm          
+    IterStm                                  -> Stm          
+    JmpStm                                   -> Stm          
+    Id ":" Stm                               -> LabeledStm   {cons("Label")}
+    "case" ConstExp ":" Stm                  -> LabeledStm   {cons("Case")}
+    "default" ":" Stm                        -> LabeledStm   {cons("Default")}
+    "{" BlockItem* "}"                       -> CompoundStm  {cons("Block")}
+    Decl                                     -> BlockItem    
+    Stm                                      -> BlockItem    
+    Exp? ";"                                 -> ExpStm       {cons("ExpStm")}
+    "if" "(" Exp ")" Stm                     -> SelectionStm {cons("If"), prefer}
+    "if" "(" Exp ")" Stm "else" Stm          -> SelectionStm {cons("IfElse")}
+    "switch" "(" Exp ")" Stm                 -> SelectionStm {cons("Switch")}
+    "while" "(" Exp ")" Stm                  -> IterStm      {cons("While")}
+    "do" Stm "while" "(" Exp ")"             -> IterStm      {cons("Do")}
+    "for" "(" Exp? ";" Exp? ";" Exp? ")" Stm -> IterStm      {cons("For")}
+    "for" "(" Decl Exp? ";" Exp? ")" Stm     -> IterStm      {cons("DeclFor")}
+    "goto" Id ";"                            -> JmpStm       {cons("Goto")}
+    "continue;"                              -> JmpStm       {cons("Continue")}
+    "break;"                                 -> JmpStm       {cons("Break")}
+    "return" Exp? ";"                        -> JmpStm       {cons("Return")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> Stm          {cons("COMPLETION-Stm")}
+    CONTENTCOMPLETE -> LabeledStm   {cons("COMPLETION-LabeledStm")}
+    CONTENTCOMPLETE -> CompoundStm  {cons("COMPLETION-CompoundStm")}
+    CONTENTCOMPLETE -> BlockItem    {cons("COMPLETION-BlockItem")}
+    CONTENTCOMPLETE -> ExpStm       {cons("COMPLETION-ExpStm")}
+    CONTENTCOMPLETE -> SelectionStm {cons("COMPLETION-SelectionStm")}
+    CONTENTCOMPLETE -> IterStm      {cons("COMPLETION-IterStm")}
+    CONTENTCOMPLETE -> JmpStm       {cons("COMPLETION-JmpStm")}
+
+  )
+
+module Preprocessor
+imports Lexical
+
+exports
+  lexical syntax
+    ~[\n]                 -> PPToken      
+    PPToken+              -> PPTokenSeq   
+    ( [\ \t] | Comment )* -> PPWS         
+    [\n] | EOF            -> PPNL         
+    ~[\>\n]               -> PPHChar      
+    ~[\"\n]               -> PPQChar      
+    "<" PPHChar+ ">"      -> PPHeaderName 
+    "\"" PPQChar+ "\""    -> PPHeaderName 
+
+  lexical restrictions
+    PPTokenSeq -/- ~[\n]
+    PPWS -/- [\ \t]
+
+  lexical syntax
+    "#" PPWS "if" PPWS PPTokenSeq PPWS PPNL        -> ControlLine 
+    "#" PPWS "ifdef" PPWS Id PPWS PPNL             -> ControlLine 
+    "#" PPWS "ifndef" PPWS Id PPWS PPNL            -> ControlLine 
+    "#" PPWS "elif" PPWS PPTokenSeq PPWS PPNL      -> ControlLine 
+    "#" PPWS "else" PPWS PPNL                      -> ControlLine 
+    "#" PPWS "endif" PPWS PPNL                     -> ControlLine 
+    "#" PPWS "include" PPWS PPHeaderName PPWS PPNL -> ControlLine 
+    "#" PPWS "define" PPWS PPTokenSeq PPWS PPNL    -> ControlLine 
+    "#" PPWS "undef" PPWS PPTokenSeq PPWS PPNL     -> ControlLine 
+    "#" PPWS "line" PPWS PPTokenSeq? PPWS PPNL     -> ControlLine 
+    "#" PPWS "error" PPWS PPTokenSeq? PPWS PPNL    -> ControlLine 
+    "#" PPWS "pragma" PPWS PPTokenSeq? PPWS PPNL   -> ControlLine 
+    "#" PPWS PPNL                                  -> ControlLine 
+
+  context-free syntax
+    ControlLine -> ExternalDecl {cons("PP")}
+    ControlLine -> StructDecl   {cons("PP")}
+    ControlLine -> Stm          {cons("PP")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> ExternalDecl {cons("COMPLETION-ExternalDecl")}
+    CONTENTCOMPLETE -> StructDecl   {cons("COMPLETION-StructDecl")}
+    CONTENTCOMPLETE -> Stm          {cons("COMPLETION-Stm")}
+
+module Lexical
+imports Keywords
+
+exports
+  lexical syntax
+    [\ \t\n\r\12]                   -> LAYOUT   
+    "/*" ( ~[\*] | Asterisk )* "*/" -> Comment  
+    Comment                         -> LAYOUT   
+    [\*]                            -> Asterisk 
+    "//" ~[\n]* [\n]                -> Comment  
+                                    -> EOF      
+
+  lexical restrictions
+    Asterisk -/- [\/]
+    EOF -/- ~[]
+
+  context-free restrictions
+    LAYOUT? -/- [\ \t\n\r\12]
+    LAYOUT? -/- [\/] . [\/]
+    LAYOUT? -/- [\/] . [\*]
+
+  lexical syntax
+    [\,]   -> Comma 
+    [\+\-] -> Sign  
+
+  lexical syntax
+    [a-zA-Z\_] | UniCharName ( [a-zA-Z\_0-9] | UniCharName )* -> Id 
+    Keyword                                                   -> Id {reject}
+
+  lexical restrictions
+    Id -/- [a-zA-Z\_0-9]
+
+  context-free syntax
+    CharConst   -> Constant {cons("CharConst")}
+    IntConst    -> Constant {cons("IntConst")}
+    OctConst    -> Constant {cons("OctConst")}
+    HexConst    -> Constant {cons("HexConst")}
+    FloatConst  -> Constant {cons("FloatConst")}
+    StringConst -> Constant {cons("StringConst")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> Constant {cons("COMPLETION-Constant")}
+
+  lexical syntax
+    NonzeroDigit Digit* IntSuffix? -> IntConst       
+    [0] IntSuffix?                 -> IntConst       
+    UnsignedSuffix LongLongSuffix  -> IntSuffix      
+    [uU]                           -> UnsignedSuffix 
+    [lL]                           -> LongSuffix     
+    "ll"                           -> LongLongSuffix 
+    "LL"                           -> LongLongSuffix 
+    [0-9]                          -> Digit          
+    [1-9]                          -> NonzeroDigit   
+
+  lexical restrictions
+    IntConst -/- [0-9ulUL]
+
+  lexical syntax
+    [0] OctDigit+ -> OctConst 
+    [0-7]         -> OctDigit 
+
+  lexical restrictions
+    OctConst -/- [0-7]
+
+  lexical syntax
+    [0] HexPrefix HexDigit+ -> HexConst  
+    [Xx]                    -> HexPrefix 
+    [0-9a-fA-F]             -> HexDigit  
+
+  lexical restrictions
+    HexConst -/- [0-9a-fA-FxX]
+
+  lexical syntax
+    DecFloatConst                                  -> FloatConst    
+    HexFloatConst                                  -> FloatConst    
+    FracConst ExpPart? FloatSuffix?                -> DecFloatConst 
+    Digit+ ExpPart FloatSuffix?                    -> DecFloatConst 
+    Digit* "." Digit+                              -> FracConst     
+    Digit+ "."                                     -> FracConst     
+    [eE] Sign? Digit+                              -> ExpPart       
+    [pP] Sign? Digit+                              -> BinExpPart    
+    HexPrefix HexFracConst BinExpPart FloatSuffix? -> HexFloatConst 
+    HexPrefix HexDigit+ BinExpPart FloatSuffix?    -> HexFloatConst 
+    HexDigit* "." HexDigit+                        -> HexFracConst  
+    HexDigit+ "."                                  -> HexFracConst  
+    [flFL]                                         -> FloatSuffix   
+
+  lexical restrictions
+    FloatConst -/- [0-9a-fA-FxXflFL]
+
+  lexical syntax
+    "\\u" HexQuad                       -> UniCharName 
+    "\\U" HexQuad HexQuad               -> UniCharName 
+    HexDigit HexDigit HexDigit HexDigit -> HexQuad     
+
+  lexical syntax
+    [\\] [\'\"\?\\abfnrtv]            -> EscSeq 
+    [\\] OctDigit OctDigit? OctDigit? -> EscSeq 
+    [\\] HexPrefix HexDigit+          -> EscSeq 
+    UniCharName                       -> EscSeq 
+
+  lexical syntax
+    [LuU]? "'" Char+ "'" -> CharConst 
+    ~[\\\'\n]            -> Char      
+    EscSeq               -> Char      
+
+  lexical syntax
+    EncPrefix? "\"" SChar* "\"" -> StringConst 
+    "u8"                        -> EncPrefix   
+    [uUL]                       -> EncPrefix   
+    ~[\\\"\n]                   -> SChar       
+    EscSeq                      -> SChar       
+
+module Keywords
+exports
+  lexical syntax
+    "auto"           -> Keyword 
+    "break"          -> Keyword 
+    "case"           -> Keyword 
+    "char"           -> Keyword 
+    "const"          -> Keyword 
+    "continue"       -> Keyword 
+    "default"        -> Keyword 
+    "do"             -> Keyword 
+    "double"         -> Keyword 
+    "else"           -> Keyword 
+    "enum"           -> Keyword 
+    "extern"         -> Keyword 
+    "float"          -> Keyword 
+    "for"            -> Keyword 
+    "goto"           -> Keyword 
+    "if"             -> Keyword 
+    "inline"         -> Keyword 
+    "int"            -> Keyword 
+    "long"           -> Keyword 
+    "register"       -> Keyword 
+    "return"         -> Keyword 
+    "short"          -> Keyword 
+    "signed"         -> Keyword 
+    "sizeof"         -> Keyword 
+    "static"         -> Keyword 
+    "struct"         -> Keyword 
+    "switch"         -> Keyword 
+    "typedef"        -> Keyword 
+    "union"          -> Keyword 
+    "unsigned"       -> Keyword 
+    "void"           -> Keyword 
+    "volatile"       -> Keyword 
+    "while"          -> Keyword 
+    "_Alignas"       -> Keyword 
+    "_Alignof"       -> Keyword 
+    "_Atomic"        -> Keyword 
+    "_Bool"          -> Keyword 
+    "_Complex"       -> Keyword 
+    "_Generic"       -> Keyword 
+    "_Imaginary"     -> Keyword 
+    "_Noreturn"      -> Keyword 
+    "_Static_assert" -> Keyword 
+    "_Thread_local"  -> Keyword 
+
+  lexical restrictions
+    "auto" "break" "case" "char" "const" "continue" "default" "do" "double"
+    "else" "enum" "extern" "float" "for" "goto" "if" "inline" "int" "long"
+    "register" "return" "short" "signed" "sizeof" "static" "struct" "switch"
+    "typedef" "union" "unsigned" "void" "volatile" "while" "_Alignas" "_Alignof"
+    "_Atomic" "_Bool" "_Complex" "_Generic" "_Imaginary" "_Noreturn"
+    "_Static_assert" "_Thread_local" -/- [a-zA-Z\_0-9]
+
+module ExternalDefinitions
+imports Declarations Statements
+
+exports
+  context-free syntax
+    "ExternalDecl+;" "{\"\\n\"}"               -> TranslationUnit {cons("TranslationUnit")}
+    FuncDef                                    -> ExternalDecl    
+    Decl                                       -> ExternalDecl    
+    DeclSpec* FuncDeclarator Decl* CompoundStm -> FuncDef         {cons("FuncDef")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> TranslationUnit {cons("COMPLETION-TranslationUnit")}
+    CONTENTCOMPLETE -> ExternalDecl    {cons("COMPLETION-ExternalDecl")}
+    CONTENTCOMPLETE -> FuncDef         {cons("COMPLETION-FuncDef")}
+
+module Expressions
+imports Declarations Lexical
+
+exports
+  context-free syntax
+    Id                                               -> PrimExp    {cons("DeclRef")}
+    Constant                                         -> PrimExp    
+    GenSelect                                        -> PrimExp    
+    "(" Exp ")"                                      -> PrimExp    {bracket}
+    "_Generic" "(" AssignExp "," {GenAssoc ","}+ ")" -> GenSelect  {cons("GenSelect")}
+    TypeName ":" AssignExp                           -> GenAssoc   {cons("GenTypeAssoc")}
+    "default" ":" AssignExp                          -> GenAssoc   {cons("GenDefaultAssoc")}
+    PrimExp                                          -> PostfixExp 
+    PostfixExp "[" Exp "]"                           -> PostfixExp {cons("ArrayAccess")}
+    PostfixExp "(" {AssignExp ","}* ")"              -> PostfixExp {cons("Call")}
+    PostfixExp "." Id                                -> PostfixExp {cons("Access")}
+    PostfixExp "->" Id                               -> PostfixExp {cons("DerefAccess")}
+    PostfixExp "++"                                  -> PostfixExp {cons("PostInc")}
+    PostfixExp "--"                                  -> PostfixExp {cons("PostDec")}
+    PostfixExp                                       -> UnaryExp   
+    "++" UnaryExp                                    -> UnaryExp   {cons("PreInc")}
+    "--" UnaryExp                                    -> UnaryExp   {cons("PreDec")}
+    UnaryOp CastExp                                  -> UnaryExp   {cons("UnaryOp")}
+    "sizeof" UnaryExp                                -> UnaryExp   {cons("ExpSizeof")}
+    "sizeof" "(" TypeName ")"                        -> UnaryExp   {cons("TypeSizeof")}
+    "_Alignof" "(" TypeName ")"                      -> UnaryExp   {cons("Alignof")}
+    "&"                                              -> UnaryOp    {cons("Ref")}
+    "*"                                              -> UnaryOp    {cons("Deref")}
+    "+"                                              -> UnaryOp    {cons("Pos")}
+    "-"                                              -> UnaryOp    {cons("Neg")}
+    "~"                                              -> UnaryOp    {cons("BNot")}
+    "!"                                              -> UnaryOp    {cons("LNot")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> PrimExp    {cons("COMPLETION-PrimExp")}
+    CONTENTCOMPLETE -> GenSelect  {cons("COMPLETION-GenSelect")}
+    CONTENTCOMPLETE -> GenAssoc   {cons("COMPLETION-GenAssoc")}
+    CONTENTCOMPLETE -> PostfixExp {cons("COMPLETION-PostfixExp")}
+    CONTENTCOMPLETE -> UnaryExp   {cons("COMPLETION-UnaryExp")}
+    CONTENTCOMPLETE -> UnaryOp    {cons("COMPLETION-UnaryOp")}
+
+  lexical restrictions
+    "+" -/- [\+]
+    "-" -/- [\-]
+
+  context-free syntax
+    UnaryExp                 -> CastExp  
+    "(" TypeName ")" CastExp -> CastExp  {cons("Cast")}
+    CastExp                  -> MulExp   
+    MulExp MulOp CastExp     -> MulExp   {cons("BinOp")}
+    "*"                      -> MulOp    {cons("Mul")}
+    "/"                      -> MulOp    {cons("Div")}
+    "%"                      -> MulOp    {cons("Mod")}
+    MulExp                   -> AddExp   
+    AddExp AddOp MulExp      -> AddExp   {cons("BinOp")}
+    "+"                      -> AddOp    {cons("Add")}
+    "-"                      -> AddOp    {cons("Sub")}
+    AddExp                   -> ShiftExp 
+    ShiftExp ShiftOp AddExp  -> ShiftExp {cons("BinOp")}
+    "<<"                     -> ShiftOp  {cons("LShift")}
+    ">>"                     -> ShiftOp  {cons("RShift")}
+    ShiftExp                 -> RelExp   
+    RelExp RelOp ShiftExp    -> RelExp   {cons("BinOp")}
+    "<"                      -> RelOp    {cons("Lt")}
+    ">"                      -> RelOp    {cons("Gt")}
+    "<="                     -> RelOp    {cons("Lte")}
+    ">="                     -> RelOp    {cons("Gte")}
+    RelExp                   -> EqExp    
+    EqExp EqOp RelExp        -> EqExp    {cons("BinOp")}
+    "=="                     -> EqOp     {cons("Eq")}
+    "!="                     -> EqOp     {cons("Neq")}
+    EqExp                    -> BAndExp  
+    BAndExp BAndOp EqExp     -> BAndExp  {cons("BinOp")}
+    "&"                      -> BAndOp   {cons("BAnd")}
+    BAndExp                  -> BXorExp  
+    BXorExp BXorOp BAndExp   -> BXorExp  {cons("BinOp")}
+    "^"                      -> BXorOp   {cons("BXor")}
+    BXorExp                  -> BOrExp   
+    BOrExp BOrOp BXorExp     -> BOrExp   {cons("BinOp")}
+    "|"                      -> BOrOp    {cons("BOr")}
+    BOrExp                   -> LAndExp  
+    LAndExp LAndOp BOrExp    -> LAndExp  {cons("BinOp")}
+    "&&"                     -> LAndOp   {cons("LAnd")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> CastExp  {cons("COMPLETION-CastExp")}
+    CONTENTCOMPLETE -> MulExp   {cons("COMPLETION-MulExp")}
+    CONTENTCOMPLETE -> MulOp    {cons("COMPLETION-MulOp")}
+    CONTENTCOMPLETE -> AddExp   {cons("COMPLETION-AddExp")}
+    CONTENTCOMPLETE -> AddOp    {cons("COMPLETION-AddOp")}
+    CONTENTCOMPLETE -> ShiftExp {cons("COMPLETION-ShiftExp")}
+    CONTENTCOMPLETE -> ShiftOp  {cons("COMPLETION-ShiftOp")}
+    CONTENTCOMPLETE -> RelExp   {cons("COMPLETION-RelExp")}
+    CONTENTCOMPLETE -> RelOp    {cons("COMPLETION-RelOp")}
+    CONTENTCOMPLETE -> EqExp    {cons("COMPLETION-EqExp")}
+    CONTENTCOMPLETE -> EqOp     {cons("COMPLETION-EqOp")}
+    CONTENTCOMPLETE -> BAndExp  {cons("COMPLETION-BAndExp")}
+    CONTENTCOMPLETE -> BAndOp   {cons("COMPLETION-BAndOp")}
+    CONTENTCOMPLETE -> BXorExp  {cons("COMPLETION-BXorExp")}
+    CONTENTCOMPLETE -> BXorOp   {cons("COMPLETION-BXorOp")}
+    CONTENTCOMPLETE -> BOrExp   {cons("COMPLETION-BOrExp")}
+    CONTENTCOMPLETE -> BOrOp    {cons("COMPLETION-BOrOp")}
+    CONTENTCOMPLETE -> LAndExp  {cons("COMPLETION-LAndExp")}
+    CONTENTCOMPLETE -> LAndOp   {cons("COMPLETION-LAndOp")}
+
+  lexical restrictions
+    "&" -/- [\&]
+
+  context-free syntax
+    LAndExp              -> LOrExp 
+    LOrExp LOrOp LAndExp -> LOrExp {cons("BinOp")}
+    "||"                 -> LOrOp  {cons("LOr")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> LOrExp {cons("COMPLETION-LOrExp")}
+    CONTENTCOMPLETE -> LOrOp  {cons("COMPLETION-LOrOp")}
+
+  lexical restrictions
+    "|" -/- [\|]
+
+  context-free syntax
+    LOrExp                      -> CondExp   
+    LOrExp "?" Exp ":" CondExp  -> CondExp   {cons("IfExp")}
+    CondExp                     -> AssignExp 
+    UnaryExp AssignOp AssignExp -> AssignExp {cons("AssignExp")}
+    "="                         -> AssignOp  {cons("Eq")}
+    "*="                        -> AssignOp  {cons("Mul")}
+    "/="                        -> AssignOp  {cons("Div")}
+    "%="                        -> AssignOp  {cons("Mod")}
+    "+="                        -> AssignOp  {cons("Add")}
+    "-="                        -> AssignOp  {cons("Sub")}
+    "<<="                       -> AssignOp  {cons("LShift")}
+    ">>="                       -> AssignOp  {cons("RShift")}
+    "&="                        -> AssignOp  {cons("BAnd")}
+    "^="                        -> AssignOp  {cons("BXor")}
+    "|="                        -> AssignOp  {cons("BOr")}
+    AssignExp                   -> Exp       
+    Exp "," AssignExp           -> Exp       {cons("Comma")}
+    CondExp                     -> ConstExp  
+
+  context-free syntax
+    CONTENTCOMPLETE -> CondExp   {cons("COMPLETION-CondExp")}
+    CONTENTCOMPLETE -> AssignExp {cons("COMPLETION-AssignExp")}
+    CONTENTCOMPLETE -> AssignOp  {cons("COMPLETION-AssignOp")}
+    CONTENTCOMPLETE -> Exp       {cons("COMPLETION-Exp")}
+    CONTENTCOMPLETE -> ConstExp  {cons("COMPLETION-ConstExp")}
+
+module Declarations
+imports Expressions Lexical
+
+exports
+  context-free syntax
+    DeclSpecs {InitDeclarator ","}+ ";"                                 -> Decl                     {cons("Decl"), prefer}
+    DeclSpecs {InitDeclarator ","}* ";"                                 -> Decl                     {cons("Decl")}
+    StaticAssertDecl                                                    -> Decl                     
+    StoreClassSpec                                                      -> DeclSpec                 
+    TypeSpec                                                            -> DeclSpec                 
+    TypeQualifier                                                       -> DeclSpec                 
+    FuncSpec                                                            -> DeclSpec                 
+    AlignSpec                                                           -> DeclSpec                 
+    "DeclSpec+;" "{\"" "\"}"                                            -> DeclSpecs                
+    Declarator                                                          -> InitDeclarator           
+    Declarator "=" Initializer                                          -> InitDeclarator           {cons("Init")}
+    "typedef"                                                           -> StoreClassSpec           {cons("Typedef")}
+    "extern"                                                            -> StoreClassSpec           {cons("Extern")}
+    "static"                                                            -> StoreClassSpec           {cons("Static")}
+    "_Thead_local"                                                      -> StoreClassSpec           {cons("ThreadLocal")}
+    "auto"                                                              -> StoreClassSpec           {cons("Auto")}
+    "register"                                                          -> StoreClassSpec           {cons("Register")}
+    "void"                                                              -> TypeSpec                 {cons("Void")}
+    "char"                                                              -> TypeSpec                 {cons("Char")}
+    "short"                                                             -> TypeSpec                 {cons("Short")}
+    "int"                                                               -> TypeSpec                 {cons("Int")}
+    "long"                                                              -> TypeSpec                 {cons("Long")}
+    "float"                                                             -> TypeSpec                 {cons("Float")}
+    "double"                                                            -> TypeSpec                 {cons("Double")}
+    "signed"                                                            -> TypeSpec                 {cons("Signed")}
+    "unsigned"                                                          -> TypeSpec                 {cons("Unsigned")}
+    "_Bool"                                                             -> TypeSpec                 {cons("Bool")}
+    "_Complex"                                                          -> TypeSpec                 {cons("Complex")}
+    Id                                                                  -> TypeSpec                 {cons("DeclRef")}
+    AtomicTypeSpec                                                      -> TypeSpec                 
+    StructOrUnionSpec                                                   -> TypeSpec                 
+    EnumSpec                                                            -> TypeSpec                 
+    "struct" Id? "{" StructDecl+ "}"                                    -> StructOrUnionSpec        {cons("StructSpec")}
+    "struct" Id                                                         -> StructOrUnionSpec        {cons("StructSpec")}
+    "union" Id? "{" StructDecl+ "}"                                     -> StructOrUnionSpec        {cons("UnionSpec")}
+    "union" Id                                                          -> StructOrUnionSpec        {cons("UnionSpec")}
+    SpecifierQualifier+ {StructDeclarator ","}+ ";"                     -> StructDecl               {cons("FieldDecl"), prefer}
+    SpecifierQualifier+ {StructBitfieldDeclarator ","}* ";"             -> StructDecl               {cons("FieldDecl")}
+    StaticAssertDecl                                                    -> StructDecl               
+    TypeSpec                                                            -> SpecifierQualifier       
+    TypeQualifier                                                       -> SpecifierQualifier       
+    Declarator                                                          -> StructDeclarator         
+    Declarator ":" ConstExp                                             -> StructDeclarator         {cons("Bitfield")}
+    ":" ConstExp                                                        -> StructBitfieldDeclarator {cons("Bitfield")}
+    Declarator                                                          -> StructBitfieldDeclarator 
+    "enum" Id? "{" {Enumerator ","}+ Comma? "}"                         -> EnumSpec                 {cons("EnumSpec")}
+    "enum" Id                                                           -> EnumSpec                 {cons("EnumSpec")}
+    Id                                                                  -> Enumerator               {cons("EnumConst")}
+    Id "=" ConstExp                                                     -> Enumerator               {cons("EnumConst")}
+    "_Atomic" "(" TypeName ")"                                          -> AtomicTypeSpec           {cons("Atomic")}
+    "const"                                                             -> TypeQualifier            {cons("Const")}
+    "restrict"                                                          -> TypeQualifier            {cons("Restrict")}
+    "volatile"                                                          -> TypeQualifier            {cons("Volatile")}
+    "_Atomic"                                                           -> TypeQualifier            {cons("Atomic")}
+    "inline"                                                            -> FuncSpec                 {cons("Inline")}
+    "_Noreturn"                                                         -> FuncSpec                 {cons("NoReturn")}
+    "_Alignas" "(" TypeName ")"                                         -> AlignSpec                {cons("Alignas")}
+    "_Alignas" "(" ConstExp ")"                                         -> AlignSpec                {cons("Alignas")}
+    Ptr? DirectDeclarator                                               -> Declarator               {cons("Declarator")}
+    Id                                                                  -> DirectDeclarator         
+    "(" Declarator ")"                                                  -> DirectDeclarator         {bracket}
+    DirectDeclarator "[" TypeQualifier* AssignExp? "]"                  -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectDeclarator "[static" TypeQualifier* AssignExp "]"             -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectDeclarator "[" TypeQualifier+ "static" AssignExp "]"          -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectDeclarator "[" TypeQualifier+ "*]"                            -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectFuncDeclarator                                                -> DirectDeclarator         
+    Ptr? DirectFuncDeclarator                                           -> FuncDeclarator           {cons("Declarator")}
+    DirectDeclarator "(" ParamList ")"                                  -> DirectFuncDeclarator     {cons("FuncDeclarator"), prefer}
+    DirectDeclarator "(" ParamTypeList ")"                              -> DirectFuncDeclarator     {cons("FuncDeclarator")}
+    "*" TypeQualifier*                                                  -> Ptr                      {cons("Ptr")}
+    "*" TypeQualifier* Ptr                                              -> Ptr                      {cons("Ptr")}
+    {ParamDecl ","}*                                                    -> ParamTypeList            {cons("ParamTypeList")}
+    {ParamDecl ","}+ "," "..."                                          -> ParamTypeList            {cons("ParamTypeVararg")}
+    {Id ","}+                                                           -> ParamList                {cons("ParamList")}
+    DeclSpecs AbstractDeclarator?                                       -> ParamDecl                {cons("ParamDecl"), avoid}
+    DeclSpecs Declarator                                                -> ParamDecl                {cons("ParamDecl")}
+    SpecifierQualifier+ AbstractDeclarator?                             -> TypeName                 {cons("TypeName")}
+    Ptr                                                                 -> AbstractDeclarator       {cons("ADeclarator")}
+    Ptr? DirectAbstractDeclarator                                       -> AbstractDeclarator       {cons("ADeclarator")}
+    "(" AbstractDeclarator ")"                                          -> DirectAbstractDeclarator {bracket}
+    DirectAbstractDeclarator? "[" TypeQualifier* AssignExp? "]"         -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "[static" TypeQualifier* AssignExp "]"    -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "[" TypeQualifier+ "static" AssignExp "]" -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "[*]"                                     -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "(" ParamTypeList ")"                     -> DirectAbstractDeclarator {cons("FuncADeclarator")}
+    AssignExp                                                           -> Initializer              
+    "{" {DesignationInit ","}+ Comma? "}"                               -> Initializer              {cons("Initializer")}
+    Initializer                                                         -> DesignationInit          
+    Designation Initializer                                             -> DesignationInit          {cons("DesignationInit")}
+    Designator+ "="                                                     -> Designation              {cons("Designation")}
+    "[" ConstExp "]"                                                    -> Designator               {cons("Designator")}
+    "." Id                                                              -> Designator               {cons("Designator")}
+    "_Static_assert" "(" ConstExp "," StringConst ")" ";"               -> StaticAssertDecl         {cons("StaticAssertDecl")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> Decl                     {cons("COMPLETION-Decl")}
+    CONTENTCOMPLETE -> DeclSpec                 {cons("COMPLETION-DeclSpec")}
+    CONTENTCOMPLETE -> DeclSpecs                {cons("COMPLETION-DeclSpecs")}
+    CONTENTCOMPLETE -> InitDeclarator           {cons("COMPLETION-InitDeclarator")}
+    CONTENTCOMPLETE -> StoreClassSpec           {cons("COMPLETION-StoreClassSpec")}
+    CONTENTCOMPLETE -> TypeSpec                 {cons("COMPLETION-TypeSpec")}
+    CONTENTCOMPLETE -> StructOrUnionSpec        {cons("COMPLETION-StructOrUnionSpec")}
+    CONTENTCOMPLETE -> StructDecl               {cons("COMPLETION-StructDecl")}
+    CONTENTCOMPLETE -> SpecifierQualifier       {cons("COMPLETION-SpecifierQualifier")}
+    CONTENTCOMPLETE -> StructDeclarator         {cons("COMPLETION-StructDeclarator")}
+    CONTENTCOMPLETE -> StructBitfieldDeclarator {cons("COMPLETION-StructBitfieldDeclarator")}
+    CONTENTCOMPLETE -> EnumSpec                 {cons("COMPLETION-EnumSpec")}
+    CONTENTCOMPLETE -> Enumerator               {cons("COMPLETION-Enumerator")}
+    CONTENTCOMPLETE -> AtomicTypeSpec           {cons("COMPLETION-AtomicTypeSpec")}
+    CONTENTCOMPLETE -> TypeQualifier            {cons("COMPLETION-TypeQualifier")}
+    CONTENTCOMPLETE -> FuncSpec                 {cons("COMPLETION-FuncSpec")}
+    CONTENTCOMPLETE -> AlignSpec                {cons("COMPLETION-AlignSpec")}
+    CONTENTCOMPLETE -> Declarator               {cons("COMPLETION-Declarator")}
+    CONTENTCOMPLETE -> DirectDeclarator         {cons("COMPLETION-DirectDeclarator")}
+    CONTENTCOMPLETE -> FuncDeclarator           {cons("COMPLETION-FuncDeclarator")}
+    CONTENTCOMPLETE -> DirectFuncDeclarator     {cons("COMPLETION-DirectFuncDeclarator")}
+    CONTENTCOMPLETE -> Ptr                      {cons("COMPLETION-Ptr")}
+    CONTENTCOMPLETE -> ParamTypeList            {cons("COMPLETION-ParamTypeList")}
+    CONTENTCOMPLETE -> ParamList                {cons("COMPLETION-ParamList")}
+    CONTENTCOMPLETE -> ParamDecl                {cons("COMPLETION-ParamDecl")}
+    CONTENTCOMPLETE -> TypeName                 {cons("COMPLETION-TypeName")}
+    CONTENTCOMPLETE -> AbstractDeclarator       {cons("COMPLETION-AbstractDeclarator")}
+    CONTENTCOMPLETE -> DirectAbstractDeclarator {cons("COMPLETION-DirectAbstractDeclarator")}
+    CONTENTCOMPLETE -> Initializer              {cons("COMPLETION-Initializer")}
+    CONTENTCOMPLETE -> DesignationInit          {cons("COMPLETION-DesignationInit")}
+    CONTENTCOMPLETE -> Designation              {cons("COMPLETION-Designation")}
+    CONTENTCOMPLETE -> Designator               {cons("COMPLETION-Designator")}
+    CONTENTCOMPLETE -> StaticAssertDecl         {cons("COMPLETION-StaticAssertDecl")}
+
+module C
+imports Declarations Expressions ExternalDefinitions Keywords Lexical
+        Preprocessor Statements
+
+exports
+  context-free start-symbols
+    TranslationUnit

@@ -1,0 +1,639 @@
+module names
+
+imports
+  lib/runtime/nabl/-
+  lib/runtime/task/-
+  lib/runtime/properties/-
+  lib/runtime/types/-
+  lib/runtime/relations/-
+  lib/runtime/editor/-
+  include/C
+
+
+signature
+  constructors
+    NablNsStruct      : Namespace
+    NablNsUnion       : Namespace
+    NablNsField       : Namespace
+    NablNsDeclaration : Namespace
+    NablNsFunction    : Namespace
+
+
+signature
+  constructors
+    NablProp_decl-specs : Property
+    NablProp_decl-specs : Property
+    NablProp_decl-specs : Property
+
+
+rules
+
+  nabl-custom-properties(add-properties) =
+    ![NablProp_decl-specs(), NablProp_decl-specs(), NablProp_decl-specs()]
+    ; add-properties
+
+  decl-specs-is(|ctx__) =
+    nabl-prop-calc(|ctx__, [])
+
+  decl-specs-is(|ctx__, dep*) =
+    nabl-prop-calc(|ctx__, dep*)
+
+  decl-specs-task(|ctx__) =
+    get-or-create-property-task(|ctx__, NablProp_decl-specs())
+
+  decl-specs-list(|ctx__) =
+    nabl-prop-list(|ctx__, [])
+
+  decl-specs-list(|ctx__, dep*) =
+    nabl-prop-list(|ctx__, dep*)
+
+  decl-specs-lookup(|ctx__) =
+    nabl-prop-lookup(|NablProp_decl-specs(), ctx__, [])
+
+  decl-specs-lookup(|ctx__, dep*) =
+    nabl-prop-lookup(|NablProp_decl-specs(), ctx__, dep*)
+
+  decl-specs-match(|ctx__, expected) =
+    nabl-prop-match(
+    | NablProp_decl-specs()
+    , ctx__
+    , Eq()
+    , expected
+    )
+
+  decl-specs-match(|ctx__, relation, expected) =
+    nabl-prop-match(|NablProp_decl-specs(), ctx__, relation, expected)
+
+  create-decl-specs-task(|ctx__) =
+    fail
+
+  get-decl-specs(|) =
+    get-property(|NablProp_decl-specs())
+
+  store-decl-specs(|ctx__, prop) =
+    nabl-store-prop(
+    | ctx__
+    , Prop(NablProp_decl-specs(), prop, [])
+    )
+
+  create-property-task(|ctx__, kind):
+    term -> <create-decl-specs-task(|ctx__)> term
+    where NablProp_decl-specs() := kind
+
+  decl-specs-is(|ctx__) =
+    nabl-prop-calc(|ctx__, [])
+
+  decl-specs-is(|ctx__, dep*) =
+    nabl-prop-calc(|ctx__, dep*)
+
+  decl-specs-task(|ctx__) =
+    get-or-create-property-task(|ctx__, NablProp_decl-specs())
+
+  decl-specs-list(|ctx__) =
+    nabl-prop-list(|ctx__, [])
+
+  decl-specs-list(|ctx__, dep*) =
+    nabl-prop-list(|ctx__, dep*)
+
+  decl-specs-lookup(|ctx__) =
+    nabl-prop-lookup(|NablProp_decl-specs(), ctx__, [])
+
+  decl-specs-lookup(|ctx__, dep*) =
+    nabl-prop-lookup(|NablProp_decl-specs(), ctx__, dep*)
+
+  decl-specs-match(|ctx__, expected) =
+    nabl-prop-match(
+    | NablProp_decl-specs()
+    , ctx__
+    , Eq()
+    , expected
+    )
+
+  decl-specs-match(|ctx__, relation, expected) =
+    nabl-prop-match(|NablProp_decl-specs(), ctx__, relation, expected)
+
+  create-decl-specs-task(|ctx__) =
+    fail
+
+  get-decl-specs(|) =
+    get-property(|NablProp_decl-specs())
+
+  store-decl-specs(|ctx__, prop) =
+    nabl-store-prop(
+    | ctx__
+    , Prop(NablProp_decl-specs(), prop, [])
+    )
+
+  create-property-task(|ctx__, kind):
+    term -> <create-decl-specs-task(|ctx__)> term
+    where NablProp_decl-specs() := kind
+
+  decl-specs-is(|ctx__) =
+    nabl-prop-calc(|ctx__, [])
+
+  decl-specs-is(|ctx__, dep*) =
+    nabl-prop-calc(|ctx__, dep*)
+
+  decl-specs-task(|ctx__) =
+    get-or-create-property-task(|ctx__, NablProp_decl-specs())
+
+  decl-specs-list(|ctx__) =
+    nabl-prop-list(|ctx__, [])
+
+  decl-specs-list(|ctx__, dep*) =
+    nabl-prop-list(|ctx__, dep*)
+
+  decl-specs-lookup(|ctx__) =
+    nabl-prop-lookup(|NablProp_decl-specs(), ctx__, [])
+
+  decl-specs-lookup(|ctx__, dep*) =
+    nabl-prop-lookup(|NablProp_decl-specs(), ctx__, dep*)
+
+  decl-specs-match(|ctx__, expected) =
+    nabl-prop-match(
+    | NablProp_decl-specs()
+    , ctx__
+    , Eq()
+    , expected
+    )
+
+  decl-specs-match(|ctx__, relation, expected) =
+    nabl-prop-match(|NablProp_decl-specs(), ctx__, relation, expected)
+
+  create-decl-specs-task(|ctx__) =
+    fail
+
+  get-decl-specs(|) =
+    get-property(|NablProp_decl-specs())
+
+  store-decl-specs(|ctx__, prop) =
+    nabl-store-prop(
+    | ctx__
+    , Prop(NablProp_decl-specs(), prop, [])
+    )
+
+  create-property-task(|ctx__, kind):
+    term -> <create-decl-specs-task(|ctx__)> term
+    where NablProp_decl-specs() := kind
+
+
+rules
+
+  nabl-scoping-site =
+    ?TranslationUnit(_)
+    ; nabl-scope(
+      | [ NablNsStruct()
+        , NablNsUnion()
+        , NablNsFunction()
+        , NablNsDeclaration()
+        ]
+      )
+
+  nabl-get-scope =
+    ?TranslationUnit(_)
+    ; ![ NablNsStruct()
+       , NablNsUnion()
+       , NablNsFunction()
+       , NablNsDeclaration()
+       ]
+
+  nabl-def-site(child-uris__, sibl-uris__, implicits__|lang__, ctx__, uniques__, uri__, states__) =
+    ?TranslationUnit(_)
+    ; where(i-1__ := <nabl-def(
+                        ?c-uri1__
+                      , ?s-uri1__
+                      | lang__
+                      , ctx__
+                      , uniques__
+                      , uri__
+                      , uri__
+                      , NablNsFunction()
+                      , Unique()
+                      , Current()
+                      , []
+                      , []
+                      )> "printf")
+    ; where(i-2__ := <nabl-def(
+                        ?c-uri2__
+                      , ?s-uri2__
+                      | lang__
+                      , ctx__
+                      , uniques__
+                      , c-uri1__
+                      , s-uri1__
+                      , NablNsFunction()
+                      , Unique()
+                      , Current()
+                      , []
+                      , []
+                      )> "puts")
+    ; where(i-3__ := <nabl-def(
+                        ?c-uri3__
+                      , ?s-uri3__
+                      | lang__
+                      , ctx__
+                      , uniques__
+                      , c-uri2__
+                      , s-uri2__
+                      , NablNsFunction()
+                      , Unique()
+                      , Current()
+                      , []
+                      , []
+                      )> "atoi")
+    ; match(child-uris__|c-uri3__)
+    ; match(sibl-uris__|s-uri3__)
+    ; match(
+        implicits__
+      | [i-1__, i-2__, i-3__]
+      )
+
+  nabl-get-name :
+    StructSpec(Some(s)) -> s
+
+  nabl-name-apply(s) =
+    StructSpec(Some(s))
+
+  nabl-def-site(child-uris__, sibl-uris__, implicits__|lang__, ctx__, uniques__, uri__, states__) =
+    ?StructSpec(Some(s))
+    ; origin-track-forced(
+        StructSpec(
+          origin-track-forced(
+            Some(
+              nabl-def(
+                ?c-uri1__
+              , ?s-uri1__
+              | lang__
+              , ctx__
+              , uniques__
+              , uri__
+              , uri__
+              , NablNsStruct()
+              , Unique()
+              , Current()
+              , []
+              , []
+              )
+            )
+          |
+          )
+        )
+      |
+      )
+    ; match(child-uris__|c-uri1__)
+    ; match(sibl-uris__|s-uri1__)
+    ; match(implicits__|[])
+
+  nabl-get-scope =
+    ?StructSpec(Some(s), _)
+    ; ![NablNsField()]
+
+  nabl-get-name :
+    StructSpec(Some(s), _) -> s
+
+  nabl-name-apply(s) =
+    StructSpec(Some(s), id)
+
+  nabl-def-site(child-uris__, sibl-uris__, implicits__|lang__, ctx__, uniques__, uri__, states__) =
+    ?StructSpec(Some(s), _)
+    ; origin-track-forced(
+        StructSpec(
+          origin-track-forced(
+            Some(
+              nabl-def(
+                ?c-uri1__
+              , ?s-uri1__
+              | lang__
+              , ctx__
+              , uniques__
+              , uri__
+              , uri__
+              , NablNsStruct()
+              , Unique()
+              , Current()
+              , [NablNsField()]
+              , []
+              )
+            )
+          |
+          )
+        , id
+        )
+      |
+      )
+    ; match(child-uris__|c-uri1__)
+    ; match(sibl-uris__|s-uri1__)
+    ; match(implicits__|[])
+
+  nabl-scoping-site =
+    ?StructSpec(None(), _)
+    ; nabl-scope(|[NablNsField()])
+
+  nabl-get-scope =
+    ?StructSpec(None(), _)
+    ; ![NablNsField()]
+
+  nabl-get-name :
+    FieldDecl(ds*, Declarator(_, f)) -> f
+
+  nabl-name-apply(s) =
+    FieldDecl(id, Declarator(id, s))
+
+  nabl-def-site(child-uris__, sibl-uris__, implicits__|lang__, ctx__, uniques__, uri__, states__) =
+    ?FieldDecl(ds*, Declarator(_, f))
+    ; origin-track-forced(
+        FieldDecl(
+          id
+        , origin-track-forced(
+            Declarator(
+              id
+            , nabl-def(
+                ?c-uri1__
+              , ?s-uri1__
+              | lang__
+              , ctx__
+              , uniques__
+              , uri__
+              , uri__
+              , NablNsField()
+              , Unique()
+              , Current()
+              , []
+              , []
+              )
+            )
+          |
+          )
+        )
+      |
+      )
+    ; match(child-uris__|c-uri1__)
+    ; match(sibl-uris__|s-uri1__)
+    ; match(implicits__|[])
+
+  nabl-prop-site(|lang__, ctx__, uris__, states__, implicits__) =
+    ?FieldDecl(ds*, Declarator(_, f))
+    ; (where(id)
+       ; FieldDecl(
+           id
+         , Declarator(
+             id
+           , nabl-store-props(
+             | ctx__
+             , [Prop(NablProp_decl-specs(), ds*, [])]
+             )
+           )
+         ))
+    ; fail
+
+  nabl-get-scope =
+    ?FuncDef(
+       ds*
+     , Declarator(_, FuncDeclarator(f, _))
+     , _
+     , _
+     )
+    ; ![NablNsDeclaration()]
+
+  nabl-get-name :
+    FuncDef(
+      ds*
+    , Declarator(_, FuncDeclarator(f, _))
+    , _
+    , _
+    ) -> f
+
+  nabl-name-apply(s) =
+    FuncDef(
+      id
+    , Declarator(id, FuncDeclarator(s, id))
+    , id
+    , id
+    )
+
+  nabl-def-site(child-uris__, sibl-uris__, implicits__|lang__, ctx__, uniques__, uri__, states__) =
+    ?FuncDef(
+       ds*
+     , Declarator(_, FuncDeclarator(f, _))
+     , _
+     , _
+     )
+    ; origin-track-forced(
+        FuncDef(
+          id
+        , origin-track-forced(
+            Declarator(
+              id
+            , origin-track-forced(
+                FuncDeclarator(
+                  nabl-def(
+                    ?c-uri1__
+                  , ?s-uri1__
+                  | lang__
+                  , ctx__
+                  , uniques__
+                  , uri__
+                  , uri__
+                  , NablNsFunction()
+                  , Unique()
+                  , Current()
+                  , [NablNsDeclaration()]
+                  , []
+                  )
+                , id
+                )
+              |
+              )
+            )
+          |
+          )
+        , id
+        , id
+        )
+      |
+      )
+    ; match(child-uris__|c-uri1__)
+    ; match(sibl-uris__|s-uri1__)
+    ; match(implicits__|[])
+
+  nabl-prop-site(|lang__, ctx__, uris__, states__, implicits__) =
+    ?FuncDef(
+       ds*
+     , Declarator(_, FuncDeclarator(f, _))
+     , _
+     , _
+     )
+    ; (where(id)
+       ; FuncDef(
+           id
+         , Declarator(
+             id
+           , FuncDeclarator(
+               nabl-store-props(
+               | ctx__
+               , [Prop(NablProp_decl-specs(), ds*, [])]
+               )
+             , id
+             )
+           )
+         , id
+         , id
+         ))
+    ; fail
+
+  nabl-get-name :
+    ParamDecl(ds*, Declarator(ptr, d)) -> d
+
+  nabl-name-apply(s) =
+    ParamDecl(id, Declarator(id, s))
+
+  nabl-def-site(child-uris__, sibl-uris__, implicits__|lang__, ctx__, uniques__, uri__, states__) =
+    ?ParamDecl(ds*, Declarator(ptr, d))
+    ; origin-track-forced(
+        ParamDecl(
+          id
+        , origin-track-forced(
+            Declarator(
+              id
+            , nabl-def(
+                ?c-uri1__
+              , ?s-uri1__
+              | lang__
+              , ctx__
+              , uniques__
+              , uri__
+              , uri__
+              , NablNsDeclaration()
+              , Unique()
+              , Current()
+              , []
+              , []
+              )
+            )
+          |
+          )
+        )
+      |
+      )
+    ; match(child-uris__|c-uri1__)
+    ; match(sibl-uris__|s-uri1__)
+    ; match(implicits__|[])
+
+  nabl-prop-site(|lang__, ctx__, uris__, states__, implicits__) =
+    ?ParamDecl(ds*, Declarator(ptr, d))
+    ; (where(id)
+       ; ParamDecl(
+           id
+         , Declarator(
+             id
+           , nabl-store-props(
+             | ctx__
+             , [Prop(NablProp_decl-specs(), ds*, [])]
+             )
+           )
+         ))
+    ; fail
+
+  nabl-get-name :
+    Decl(ds*, Declarator(ptr, d)) -> d
+
+  nabl-name-apply(s) =
+    Decl(id, Declarator(id, s))
+
+  nabl-def-site(child-uris__, sibl-uris__, implicits__|lang__, ctx__, uniques__, uri__, states__) =
+    ?Decl(ds*, Declarator(ptr, d))
+    ; origin-track-forced(
+        Decl(
+          id
+        , origin-track-forced(
+            Declarator(
+              id
+            , nabl-def(
+                ?c-uri1__
+              , ?s-uri1__
+              | lang__
+              , ctx__
+              , uniques__
+              , uri__
+              , uri__
+              , NablNsDeclaration()
+              , Unique()
+              , Current()
+              , []
+              , []
+              )
+            )
+          |
+          )
+        )
+      |
+      )
+    ; match(child-uris__|c-uri1__)
+    ; match(sibl-uris__|s-uri1__)
+    ; match(implicits__|[])
+
+  nabl-prop-site(|lang__, ctx__, uris__, states__, implicits__) =
+    ?Decl(ds*, Declarator(ptr, d))
+    ; (where(id)
+       ; Decl(
+           id
+         , Declarator(
+             id
+           , nabl-store-props(
+             | ctx__
+             , [Prop(NablProp_decl-specs(), ds*, [])]
+             )
+           )
+         ))
+    ; fail
+
+  nabl-get-name :
+    DeclRef(d) -> d
+
+  nabl-name-apply(s) =
+    DeclRef(s)
+
+  nabl-use-site(|lang__, ctx__, uniques__, uris__, states__) =
+    ?DeclRef(d)
+    ; origin-track-forced(
+        DeclRef(
+          nabl-use(
+          | lang__
+          , ctx__
+          , uniques__
+          , uris__
+          , [ <{:
+                 id
+                 ; !UseCandidate(
+                      NablNsDeclaration()
+                    , []
+                    , Current()
+                    , True()
+                    , []
+                    )
+               }>
+            , <{:
+                 id
+                 ; !UseCandidate(
+                      NablNsStruct()
+                    , []
+                    , Current()
+                    , True()
+                    , []
+                    )
+               }>
+            , <{:
+                 id
+                 ; !UseCandidate(
+                      NablNsFunction()
+                    , []
+                    , Current()
+                    , True()
+                    , []
+                    )
+               }>
+            ]
+          )
+        )
+      |
+      )

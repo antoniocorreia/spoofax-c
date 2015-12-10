@@ -1,0 +1,143 @@
+module src-gen/completions/Expressions-esv
+
+imports
+  src-gen/completions/Declarations-esv
+  src-gen/completions/Lexical-esv
+
+completions
+  completion template PrimExp : "(Exp)" =
+    "(" <Exp:Exp> ")"     
+  completion template GenSelect : "_Generic(AssignExp, GenAssoc)" =
+    "_Generic(" <AssignExp:AssignExp> ", " <GenAssoc:GenAssoc> ")"  
+  completion template GenAssoc : "TypeName : AssignExp" =
+    <TypeName:TypeName> " : " <AssignExp:AssignExp>  
+  completion template GenAssoc : "default : AssignExp" =
+    "default : " <AssignExp:AssignExp>  
+  completion template PostfixExp : "PostfixExp[Exp]" =
+    <PostfixExp:PostfixExp> "[" <Exp:Exp> "]"  
+  completion template PostfixExp : "PostfixExp()" =
+    <PostfixExp:PostfixExp> "(" <:AssignExp> ")"  
+  completion template PostfixExp : "PostfixExp.Id" =
+    <PostfixExp:PostfixExp> "." <Id:Id>  
+  completion template PostfixExp : "PostfixExp->Id" =
+    <PostfixExp:PostfixExp> "->" <Id:Id>  
+  completion template PostfixExp : "PostfixExp++" =
+    <PostfixExp:PostfixExp> "++"  
+  completion template PostfixExp : "PostfixExp--" =
+    <PostfixExp:PostfixExp> "--"  
+  completion template UnaryExp : "++UnaryExp" =
+    "++" <UnaryExp:UnaryExp>  
+  completion template UnaryExp : "--UnaryExp" =
+    "--" <UnaryExp:UnaryExp>  
+  completion template UnaryExp : "UnaryOpCastExp" =
+    <UnaryOp:UnaryOp> <CastExp:CastExp>  
+  completion template UnaryExp : "sizeofUnaryExp" =
+    "sizeof" <UnaryExp:UnaryExp>  
+  completion template UnaryExp : "sizeof(TypeName)" =
+    "sizeof(" <TypeName:TypeName> ")"  
+  completion template UnaryExp : "_Alignof(TypeName)" =
+    "_Alignof(" <TypeName:TypeName> ")"  
+  completion template UnaryOp : "&" =
+    "&"                       
+  completion template UnaryOp : "*" =
+    "*"                       
+  completion template UnaryOp : "+" =
+    "+"                       
+  completion template UnaryOp : "-" =
+    "-"                       
+  completion template UnaryOp : "~" =
+    "~"                       
+  completion template UnaryOp : "!" =
+    "!"                       
+
+completions
+  completion template CastExp : "(TypeName)CastExp" =
+    "(" <TypeName:TypeName> ")" <CastExp:CastExp>  
+  completion template MulExp : "MulExp MulOp CastExp" =
+    <MulExp:MulExp> " " <MulOp:MulOp> " " <CastExp:CastExp>  
+  completion template MulOp : "*" =
+    "*"                        
+  completion template MulOp : "/" =
+    "/"                        
+  completion template MulOp : "%" =
+    "%"                        
+  completion template AddExp : "AddExp AddOp MulExp" =
+    <AddExp:AddExp> " " <AddOp:AddOp> " " <MulExp:MulExp>  
+  completion template AddOp : "+" =
+    "+"                        
+  completion template AddOp : "-" =
+    "-"                        
+  completion template ShiftExp : "ShiftExp ShiftOp AddExp" =
+    <ShiftExp:ShiftExp> " " <ShiftOp:ShiftOp> " " <AddExp:AddExp>  
+  completion template ShiftOp : "<<" =
+    "<<"                    
+  completion template ShiftOp : ">>" =
+    ">>"                    
+  completion template RelExp : "RelExp RelOp ShiftExp" =
+    <RelExp:RelExp> " " <RelOp:RelOp> " " <ShiftExp:ShiftExp>  
+  completion template RelOp : "<" =
+    "<"                        
+  completion template RelOp : ">" =
+    ">"                        
+  completion template RelOp : "<=" =
+    "<="                      
+  completion template RelOp : ">=" =
+    ">="                      
+  completion template EqExp : "EqExp EqOp RelExp" =
+    <EqExp:EqExp> " " <EqOp:EqOp> " " <RelExp:RelExp>  
+  completion template EqOp : "==" =
+    "=="                       
+  completion template EqOp : "!=" =
+    "!="                       
+  completion template BAndExp : "BAndExp BAndOp EqExp" =
+    <BAndExp:BAndExp> " " <BAndOp:BAndOp> " " <EqExp:EqExp>  
+  completion template BAndOp : "&" =
+    "&"                       
+  completion template BXorExp : "BXorExp BXorOp BAndExp" =
+    <BXorExp:BXorExp> " " <BXorOp:BXorOp> " " <BAndExp:BAndExp>  
+  completion template BXorOp : "^" =
+    "^"                       
+  completion template BOrExp : "BOrExp BOrOp BXorExp" =
+    <BOrExp:BOrExp> " " <BOrOp:BOrOp> " " <BXorExp:BXorExp>  
+  completion template BOrOp : "|" =
+    "|"                        
+  completion template LAndExp : "LAndExp LAndOp BOrExp" =
+    <LAndExp:LAndExp> " " <LAndOp:LAndOp> " " <BOrExp:BOrExp>  
+  completion template LAndOp : "&&" =
+    "&&"                     
+
+completions
+  completion template LOrExp : "LOrExp LOrOp LAndExp" =
+    <LOrExp:LOrExp> " " <LOrOp:LOrOp> " " <LAndExp:LAndExp>  
+  completion template LOrOp : "||" =
+    "||"                
+
+completions
+  completion template CondExp : "LOrExp ? Exp : CondExp" =
+    <LOrExp:LOrExp> " ? " <Exp:Exp> " : " <CondExp:CondExp>  
+  completion template AssignExp : "UnaryExp AssignOp AssignExp" =
+    <UnaryExp:UnaryExp> " " <AssignOp:AssignOp> " " <AssignExp:AssignExp>  
+  completion template AssignOp : "=" =
+    "="                             
+  completion template AssignOp : "*=" =
+    "*="                           
+  completion template AssignOp : "/=" =
+    "/="                           
+  completion template AssignOp : "%=" =
+    "%="                           
+  completion template AssignOp : "+=" =
+    "+="                           
+  completion template AssignOp : "-=" =
+    "-="                           
+  completion template AssignOp : "<<=" =
+    "<<="                         
+  completion template AssignOp : ">>=" =
+    ">>="                         
+  completion template AssignOp : "&=" =
+    "&="                           
+  completion template AssignOp : "^=" =
+    "^="                           
+  completion template AssignOp : "|=" =
+    "|="                           
+  completion template Exp : "Exp, AssignExp" =
+    <Exp:Exp> ", " <AssignExp:AssignExp>  

@@ -1,0 +1,12 @@
+
+module src-gen/completions/ExternalDefinitions-esv
+
+imports
+  src-gen/completions/Declarations-esv
+  src-gen/completions/Statements-esv
+
+completions
+  completion template TranslationUnit : "ExternalDecl+; {\"\ \"}" =
+    "ExternalDecl+; {\"\\n\"}"  
+  completion template FuncDef : " FuncDeclarator CompoundStm" =
+    <:DeclSpec> " " <FuncDeclarator:FuncDeclarator> " " <:Decl> " " <CompoundStm:CompoundStm>  

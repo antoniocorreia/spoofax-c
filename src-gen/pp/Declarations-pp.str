@@ -1,0 +1,1325 @@
+module src-gen/pp/Declarations-pp
+
+imports
+  libstratego-gpp
+  runtime/tmpl/pp
+  src-gen/signatures/Declarations-sig
+
+
+imports
+  src-gen/signatures/Expressions-sig
+  src-gen/signatures/Lexical-sig
+
+
+imports
+  src-gen/pp/Expressions-pp
+  src-gen/pp/Lexical-pp
+
+
+strategies
+  prettyprint-example =
+    prettyprint-Decl
+
+  prettyprint-example =
+    prettyprint-DeclSpec
+
+  prettyprint-example =
+    prettyprint-DeclSpecs
+
+  prettyprint-example =
+    prettyprint-InitDeclarator
+
+  prettyprint-example =
+    prettyprint-StoreClassSpec
+
+  prettyprint-example =
+    prettyprint-TypeSpec
+
+  prettyprint-example =
+    prettyprint-StructOrUnionSpec
+
+  prettyprint-example =
+    prettyprint-StructDecl
+
+  prettyprint-example =
+    prettyprint-SpecifierQualifier
+
+  prettyprint-example =
+    prettyprint-StructDeclarator
+
+  prettyprint-example =
+    prettyprint-StructBitfieldDeclarator
+
+  prettyprint-example =
+    prettyprint-EnumSpec
+
+  prettyprint-example =
+    prettyprint-Enumerator
+
+  prettyprint-example =
+    prettyprint-AtomicTypeSpec
+
+  prettyprint-example =
+    prettyprint-TypeQualifier
+
+  prettyprint-example =
+    prettyprint-FuncSpec
+
+  prettyprint-example =
+    prettyprint-AlignSpec
+
+  prettyprint-example =
+    prettyprint-Declarator
+
+  prettyprint-example =
+    prettyprint-DirectDeclarator
+
+  prettyprint-example =
+    prettyprint-FuncDeclarator
+
+  prettyprint-example =
+    prettyprint-DirectFuncDeclarator
+
+  prettyprint-example =
+    prettyprint-Ptr
+
+  prettyprint-example =
+    prettyprint-ParamTypeList
+
+  prettyprint-example =
+    prettyprint-ParamList
+
+  prettyprint-example =
+    prettyprint-ParamDecl
+
+  prettyprint-example =
+    prettyprint-TypeName
+
+  prettyprint-example =
+    prettyprint-AbstractDeclarator
+
+  prettyprint-example =
+    prettyprint-DirectAbstractDeclarator
+
+  prettyprint-example =
+    prettyprint-Initializer
+
+  prettyprint-example =
+    prettyprint-DesignationInit
+
+  prettyprint-example =
+    prettyprint-Designation
+
+  prettyprint-example =
+    prettyprint-Designator
+
+  prettyprint-example =
+    prettyprint-StaticAssertDecl
+
+  prettyprint-Decl :
+    Decl(t1__, t2__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [ t1__'
+                            , S(" ")
+                            , t2__'
+                            , S(";")
+                            ]
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-DeclSpecs)> t1__
+    with t2__' := <pp-H-list(prettyprint-InitDeclarator|", ")> t2__
+
+  is-Decl =
+    ?Decl(_, _)
+
+  prettyprint-Decl :
+    Decl(t1__, t2__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [ t1__'
+                            , S(" ")
+                            , t2__'
+                            , S(";")
+                            ]
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-DeclSpecs)> t1__
+    with t2__' := <pp-H-list(prettyprint-InitDeclarator|", ")> t2__
+
+  is-Decl =
+    ?Decl(_, _)
+
+  prettyprint-Decl :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-Decl)
+    where t1__' := <pp-one-Z(prettyprint-StaticAssertDecl)> t1__
+
+  prettyprint-DeclSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-DeclSpec)
+    where t1__' := <pp-one-Z(prettyprint-StoreClassSpec)> t1__
+
+  prettyprint-DeclSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-DeclSpec)
+    where t1__' := <pp-one-Z(prettyprint-TypeSpec)> t1__
+
+  prettyprint-DeclSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-DeclSpec)
+    where t1__' := <pp-one-Z(prettyprint-TypeQualifier)> t1__
+
+  prettyprint-DeclSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-DeclSpec)
+    where t1__' := <pp-one-Z(prettyprint-FuncSpec)> t1__
+
+  prettyprint-DeclSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-DeclSpec)
+    where t1__' := <pp-one-Z(prettyprint-AlignSpec)> t1__
+
+  prettyprint-DeclSpecs :
+    () -> [ H(
+              [SOpt(HS(), "0")]
+            , [S("DeclSpec+; {\" \"}")]
+            )
+          ]
+
+  prettyprint-InitDeclarator :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-InitDeclarator)
+    where t1__' := <pp-one-Z(prettyprint-Declarator)> t1__
+
+  prettyprint-InitDeclarator :
+    Init(t1__, t2__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [t1__', S(" = "), t2__']
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-Declarator)> t1__
+    with t2__' := <pp-one-Z(prettyprint-Initializer)> t2__
+
+  is-InitDeclarator =
+    ?Init(_, _)
+
+  prettyprint-StoreClassSpec :
+    Typedef() -> [ H(
+                     [SOpt(HS(), "0")]
+                   , [S("typedef")]
+                   )
+                 ]
+
+  is-StoreClassSpec =
+    ?Typedef()
+
+  prettyprint-StoreClassSpec :
+    Extern() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("extern")]
+                  )
+                ]
+
+  is-StoreClassSpec =
+    ?Extern()
+
+  prettyprint-StoreClassSpec :
+    Static() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("static")]
+                  )
+                ]
+
+  is-StoreClassSpec =
+    ?Static()
+
+  prettyprint-StoreClassSpec :
+    ThreadLocal() -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [S("_Thead_local")]
+                       )
+                     ]
+
+  is-StoreClassSpec =
+    ?ThreadLocal()
+
+  prettyprint-StoreClassSpec :
+    Auto() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("auto")]
+                )
+              ]
+
+  is-StoreClassSpec =
+    ?Auto()
+
+  prettyprint-StoreClassSpec :
+    Register() -> [ H(
+                      [SOpt(HS(), "0")]
+                    , [S("register")]
+                    )
+                  ]
+
+  is-StoreClassSpec =
+    ?Register()
+
+  prettyprint-TypeSpec :
+    Void() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("void")]
+                )
+              ]
+
+  is-TypeSpec =
+    ?Void()
+
+  prettyprint-TypeSpec :
+    Char() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("char")]
+                )
+              ]
+
+  is-TypeSpec =
+    ?Char()
+
+  prettyprint-TypeSpec :
+    Short() -> [ H(
+                   [SOpt(HS(), "0")]
+                 , [S("short")]
+                 )
+               ]
+
+  is-TypeSpec =
+    ?Short()
+
+  prettyprint-TypeSpec :
+    Int() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("int")]
+               )
+             ]
+
+  is-TypeSpec =
+    ?Int()
+
+  prettyprint-TypeSpec :
+    Long() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("long")]
+                )
+              ]
+
+  is-TypeSpec =
+    ?Long()
+
+  prettyprint-TypeSpec :
+    Float() -> [ H(
+                   [SOpt(HS(), "0")]
+                 , [S("float")]
+                 )
+               ]
+
+  is-TypeSpec =
+    ?Float()
+
+  prettyprint-TypeSpec :
+    Double() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("double")]
+                  )
+                ]
+
+  is-TypeSpec =
+    ?Double()
+
+  prettyprint-TypeSpec :
+    Signed() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("signed")]
+                  )
+                ]
+
+  is-TypeSpec =
+    ?Signed()
+
+  prettyprint-TypeSpec :
+    Unsigned() -> [ H(
+                      [SOpt(HS(), "0")]
+                    , [S("unsigned")]
+                    )
+                  ]
+
+  is-TypeSpec =
+    ?Unsigned()
+
+  prettyprint-TypeSpec :
+    Bool() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("_Bool")]
+                )
+              ]
+
+  is-TypeSpec =
+    ?Bool()
+
+  prettyprint-TypeSpec :
+    Complex() -> [ H(
+                     [SOpt(HS(), "0")]
+                   , [S("_Complex")]
+                   )
+                 ]
+
+  is-TypeSpec =
+    ?Complex()
+
+  prettyprint-TypeSpec :
+    DeclRef(t1__) -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [t1__']
+                       )
+                     ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  is-TypeSpec =
+    ?DeclRef(_)
+
+  prettyprint-TypeSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-TypeSpec)
+    where t1__' := <pp-one-Z(prettyprint-AtomicTypeSpec)> t1__
+
+  prettyprint-TypeSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-TypeSpec)
+    where t1__' := <pp-one-Z(prettyprint-StructOrUnionSpec)> t1__
+
+  prettyprint-TypeSpec :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-TypeSpec)
+    where t1__' := <pp-one-Z(prettyprint-EnumSpec)> t1__
+
+  prettyprint-StructOrUnionSpec :
+    StructSpec(t1__, t2__) -> [ H(
+                                  [SOpt(HS(), "0")]
+                                , [ S("struct ")
+                                  , t1__'
+                                  , S(" {")
+                                  ]
+                                )
+                              , t2__'
+                              , H(
+                                  [SOpt(HS(), "0")]
+                                , [S("}")]
+                                )
+                              ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-Id))> t1__
+    with t2__' := <pp-indent(|"2")> [<pp-V-list(prettyprint-StructDecl)> t2__]
+
+  is-StructOrUnionSpec =
+    ?StructSpec(_, _)
+
+  prettyprint-StructOrUnionSpec :
+    StructSpec(t1__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [S("struct "), t1__']
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  is-StructOrUnionSpec =
+    ?StructSpec(_)
+
+  prettyprint-StructOrUnionSpec :
+    UnionSpec(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [ S("union ")
+                                 , t1__'
+                                 , S(" {")
+                                 ]
+                               )
+                             , t2__'
+                             , H(
+                                 [SOpt(HS(), "0")]
+                               , [S("}")]
+                               )
+                             ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-Id))> t1__
+    with t2__' := <pp-indent(|"2")> [<pp-V-list(prettyprint-StructDecl)> t2__]
+
+  is-StructOrUnionSpec =
+    ?UnionSpec(_, _)
+
+  prettyprint-StructOrUnionSpec :
+    UnionSpec(t1__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [S("union "), t1__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  is-StructOrUnionSpec =
+    ?UnionSpec(_)
+
+  prettyprint-StructDecl :
+    FieldDecl(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [ t1__'
+                                 , S(" ")
+                                 , t2__'
+                                 , S(";")
+                                 ]
+                               )
+                             ]
+    with t1__' := <pp-H-list(prettyprint-SpecifierQualifier|" ")> t1__
+    with t2__' := <pp-H-list(prettyprint-StructDeclarator|", ")> t2__
+
+  is-StructDecl =
+    ?FieldDecl(_, _)
+
+  prettyprint-StructDecl :
+    FieldDecl(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [ t1__'
+                                 , S(" ")
+                                 , t2__'
+                                 , S(";")
+                                 ]
+                               )
+                             ]
+    with t1__' := <pp-H-list(prettyprint-SpecifierQualifier|" ")> t1__
+    with t2__' := <pp-H-list(prettyprint-StructBitfieldDeclarator|", ")> t2__
+
+  is-StructDecl =
+    ?FieldDecl(_, _)
+
+  prettyprint-StructDecl :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-StructDecl)
+    where t1__' := <pp-one-Z(prettyprint-StaticAssertDecl)> t1__
+
+  prettyprint-SpecifierQualifier :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-SpecifierQualifier)
+    where t1__' := <pp-one-Z(prettyprint-TypeSpec)> t1__
+
+  prettyprint-SpecifierQualifier :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-SpecifierQualifier)
+    where t1__' := <pp-one-Z(prettyprint-TypeQualifier)> t1__
+
+  prettyprint-StructDeclarator :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-StructDeclarator)
+    where t1__' := <pp-one-Z(prettyprint-Declarator)> t1__
+
+  prettyprint-StructDeclarator :
+    Bitfield(t1__, t2__) -> [ H(
+                                [SOpt(HS(), "0")]
+                              , [t1__', S(" : "), t2__']
+                              )
+                            ]
+    with t1__' := <pp-one-Z(prettyprint-Declarator)> t1__
+    with t2__' := <pp-one-Z(prettyprint-ConstExp)> t2__
+
+  is-StructDeclarator =
+    ?Bitfield(_, _)
+
+  prettyprint-StructBitfieldDeclarator :
+    Bitfield(t1__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [S(" : "), t1__']
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-ConstExp)> t1__
+
+  is-StructBitfieldDeclarator =
+    ?Bitfield(_)
+
+  prettyprint-StructBitfieldDeclarator :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-StructBitfieldDeclarator)
+    where t1__' := <pp-one-Z(prettyprint-Declarator)> t1__
+
+  prettyprint-EnumSpec :
+    EnumSpec(t1__, t2__, t3__) -> [ H(
+                                      [SOpt(HS(), "0")]
+                                    , [ S("enum ")
+                                      , t1__'
+                                      , S(" {")
+                                      ]
+                                    )
+                                  , t2__'
+                                  , H(
+                                      [SOpt(HS(), "0")]
+                                    , [S("}")]
+                                    )
+                                  ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-Id))> t1__
+    with t2__' := <pp-indent(|"2")> [ <pp-V-list(prettyprint-Enumerator|"0", ",")> t2__
+                                    , <pp-option(pp-one-Z(prettyprint-Comma))> t3__
+                                    ]
+
+  is-EnumSpec =
+    ?EnumSpec(_, _, _)
+
+  prettyprint-EnumSpec :
+    EnumSpec(t1__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [S("enum "), t1__']
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  is-EnumSpec =
+    ?EnumSpec(_)
+
+  prettyprint-Enumerator :
+    EnumConst(t1__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [t1__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  is-Enumerator =
+    ?EnumConst(_)
+
+  prettyprint-Enumerator :
+    EnumConst(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [t1__', S(" = "), t2__']
+                               )
+                             ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+    with t2__' := <pp-one-Z(prettyprint-ConstExp)> t2__
+
+  is-Enumerator =
+    ?EnumConst(_, _)
+
+  prettyprint-AtomicTypeSpec :
+    Atomic(t1__) -> [ H(
+                        [SOpt(HS(), "0")]
+                      , [ S("_Atomic(")
+                        , t1__'
+                        , S(")")
+                        ]
+                      )
+                    ]
+    with t1__' := <pp-one-Z(prettyprint-TypeName)> t1__
+
+  is-AtomicTypeSpec =
+    ?Atomic(_)
+
+  prettyprint-TypeQualifier :
+    Const() -> [ H(
+                   [SOpt(HS(), "0")]
+                 , [S("const")]
+                 )
+               ]
+
+  is-TypeQualifier =
+    ?Const()
+
+  prettyprint-TypeQualifier :
+    Restrict() -> [ H(
+                      [SOpt(HS(), "0")]
+                    , [S("restrict")]
+                    )
+                  ]
+
+  is-TypeQualifier =
+    ?Restrict()
+
+  prettyprint-TypeQualifier :
+    Volatile() -> [ H(
+                      [SOpt(HS(), "0")]
+                    , [S("volatile")]
+                    )
+                  ]
+
+  is-TypeQualifier =
+    ?Volatile()
+
+  prettyprint-TypeQualifier :
+    Atomic() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("_Atomic")]
+                  )
+                ]
+
+  is-TypeQualifier =
+    ?Atomic()
+
+  prettyprint-FuncSpec :
+    Inline() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("inline")]
+                  )
+                ]
+
+  is-FuncSpec =
+    ?Inline()
+
+  prettyprint-FuncSpec :
+    NoReturn() -> [ H(
+                      [SOpt(HS(), "0")]
+                    , [S("_Noreturn")]
+                    )
+                  ]
+
+  is-FuncSpec =
+    ?NoReturn()
+
+  prettyprint-AlignSpec :
+    Alignas(t1__) -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [ S("_Alignas(")
+                         , t1__'
+                         , S(")")
+                         ]
+                       )
+                     ]
+    with t1__' := <pp-one-Z(prettyprint-TypeName)> t1__
+
+  is-AlignSpec =
+    ?Alignas(_)
+
+  prettyprint-AlignSpec :
+    Alignas(t1__) -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [ S("_Alignas(")
+                         , t1__'
+                         , S(")")
+                         ]
+                       )
+                     ]
+    with t1__' := <pp-one-Z(prettyprint-ConstExp)> t1__
+
+  is-AlignSpec =
+    ?Alignas(_)
+
+  prettyprint-Declarator :
+    Declarator(t1__, t2__) -> [ H(
+                                  [SOpt(HS(), "0")]
+                                , [t1__', S(" "), t2__']
+                                )
+                              ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-Ptr))> t1__
+    with t2__' := <pp-one-Z(prettyprint-DirectDeclarator)> t2__
+
+  is-Declarator =
+    ?Declarator(_, _)
+
+  prettyprint-DirectDeclarator :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__', S(" ")]
+              )
+            ]
+    where not(is-DirectDeclarator)
+    where t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  prettyprint-DirectDeclarator :
+    Parenthetical(t1__) -> [ H(
+                               [SOpt(HS(), "0")]
+                             , [ S("(")
+                               , t1__'
+                               , S(")")
+                               ]
+                             )
+                           ]
+    with t1__' := <pp-one-Z(prettyprint-Declarator)> t1__
+
+  prettyprint-DirectDeclarator :
+    ArrayDeclarator(t1__, t2__, t3__) -> [ H(
+                                             [SOpt(HS(), "0")]
+                                           , [ t1__'
+                                             , S("[")
+                                             , t2__'
+                                             , S(" ")
+                                             , t3__'
+                                             , S("]")
+                                             ]
+                                           )
+                                         ]
+    with t1__' := <pp-one-Z(prettyprint-DirectDeclarator)> t1__
+    with t2__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t2__
+    with t3__' := <pp-option(pp-one-Z(prettyprint-AssignExp))> t3__
+
+  is-DirectDeclarator =
+    ?ArrayDeclarator(_, _, _)
+
+  prettyprint-DirectDeclarator :
+    ArrayDeclarator(t1__, t2__, t3__) -> [ H(
+                                             [SOpt(HS(), "0")]
+                                           , [ t1__'
+                                             , S("[static ")
+                                             , t2__'
+                                             , S(" ")
+                                             , t3__'
+                                             , S("]")
+                                             ]
+                                           )
+                                         ]
+    with t1__' := <pp-one-Z(prettyprint-DirectDeclarator)> t1__
+    with t2__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t2__
+    with t3__' := <pp-one-Z(prettyprint-AssignExp)> t3__
+
+  is-DirectDeclarator =
+    ?ArrayDeclarator(_, _, _)
+
+  prettyprint-DirectDeclarator :
+    ArrayDeclarator(t1__, t2__, t3__) -> [ H(
+                                             [SOpt(HS(), "0")]
+                                           , [ t1__'
+                                             , S("[")
+                                             , t2__'
+                                             , S(" static ")
+                                             , t3__'
+                                             , S("]")
+                                             ]
+                                           )
+                                         ]
+    with t1__' := <pp-one-Z(prettyprint-DirectDeclarator)> t1__
+    with t2__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t2__
+    with t3__' := <pp-one-Z(prettyprint-AssignExp)> t3__
+
+  is-DirectDeclarator =
+    ?ArrayDeclarator(_, _, _)
+
+  prettyprint-DirectDeclarator :
+    ArrayDeclarator(t1__, t2__) -> [ H(
+                                       [SOpt(HS(), "0")]
+                                     , [ t1__'
+                                       , S("[")
+                                       , t2__'
+                                       , S(" *]")
+                                       ]
+                                     )
+                                   ]
+    with t1__' := <pp-one-Z(prettyprint-DirectDeclarator)> t1__
+    with t2__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t2__
+
+  is-DirectDeclarator =
+    ?ArrayDeclarator(_, _)
+
+  prettyprint-DirectDeclarator :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-DirectDeclarator)
+    where t1__' := <pp-one-Z(prettyprint-DirectFuncDeclarator)> t1__
+
+  prettyprint-FuncDeclarator :
+    Declarator(t1__, t2__) -> [ H(
+                                  [SOpt(HS(), "0")]
+                                , [t1__', S(" "), t2__']
+                                )
+                              ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-Ptr))> t1__
+    with t2__' := <pp-one-Z(prettyprint-DirectFuncDeclarator)> t2__
+
+  is-FuncDeclarator =
+    ?Declarator(_, _)
+
+  prettyprint-DirectFuncDeclarator :
+    FuncDeclarator(t1__, t2__) -> [ H(
+                                      [SOpt(HS(), "0")]
+                                    , [ t1__'
+                                      , S("(")
+                                      , t2__'
+                                      , S(")")
+                                      ]
+                                    )
+                                  ]
+    with t1__' := <pp-one-Z(prettyprint-DirectDeclarator)> t1__
+    with t2__' := <pp-one-Z(prettyprint-ParamList)> t2__
+
+  is-DirectFuncDeclarator =
+    ?FuncDeclarator(_, _)
+
+  prettyprint-DirectFuncDeclarator :
+    FuncDeclarator(t1__, t2__) -> [ H(
+                                      [SOpt(HS(), "0")]
+                                    , [ t1__'
+                                      , S("(")
+                                      , t2__'
+                                      , S(")")
+                                      ]
+                                    )
+                                  ]
+    with t1__' := <pp-one-Z(prettyprint-DirectDeclarator)> t1__
+    with t2__' := <pp-one-Z(prettyprint-ParamTypeList)> t2__
+
+  is-DirectFuncDeclarator =
+    ?FuncDeclarator(_, _)
+
+  prettyprint-Ptr :
+    Ptr(t1__) -> [ H(
+                     [SOpt(HS(), "0")]
+                   , [S("*"), t1__']
+                   )
+                 ]
+    with t1__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t1__
+
+  is-Ptr =
+    ?Ptr(_)
+
+  prettyprint-Ptr :
+    Ptr(t1__, t2__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [S("*"), t1__', t2__']
+                         )
+                       ]
+    with t1__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t1__
+    with t2__' := <pp-one-Z(prettyprint-Ptr)> t2__
+
+  is-Ptr =
+    ?Ptr(_, _)
+
+  prettyprint-ParamTypeList :
+    ParamTypeList(t1__) -> [ H(
+                               [SOpt(HS(), "0")]
+                             , [t1__']
+                             )
+                           ]
+    with t1__' := <pp-H-list(prettyprint-ParamDecl|", ")> t1__
+
+  is-ParamTypeList =
+    ?ParamTypeList(_)
+
+  prettyprint-ParamTypeList :
+    ParamTypeVararg(t1__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [t1__', S(", ...")]
+                               )
+                             ]
+    with t1__' := <pp-H-list(prettyprint-ParamDecl|", ")> t1__
+
+  is-ParamTypeList =
+    ?ParamTypeVararg(_)
+
+  prettyprint-ParamList :
+    ParamList(t1__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [t1__']
+                         )
+                       ]
+    with t1__' := <pp-H-list(prettyprint-Id|", ")> t1__
+
+  is-ParamList =
+    ?ParamList(_)
+
+  prettyprint-ParamDecl :
+    ParamDecl(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [t1__', S(" "), t2__']
+                               )
+                             ]
+    with t1__' := <pp-one-Z(prettyprint-DeclSpecs)> t1__
+    with t2__' := <pp-option(pp-one-Z(prettyprint-AbstractDeclarator))> t2__
+
+  is-ParamDecl =
+    ?ParamDecl(_, _)
+
+  prettyprint-ParamDecl :
+    ParamDecl(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [t1__', S(" "), t2__']
+                               )
+                             ]
+    with t1__' := <pp-one-Z(prettyprint-DeclSpecs)> t1__
+    with t2__' := <pp-one-Z(prettyprint-Declarator)> t2__
+
+  is-ParamDecl =
+    ?ParamDecl(_, _)
+
+  prettyprint-TypeName :
+    TypeName(t1__, t2__) -> [ H(
+                                [SOpt(HS(), "0")]
+                              , [t1__', S(" "), t2__']
+                              )
+                            ]
+    with t1__' := <pp-H-list(prettyprint-SpecifierQualifier|" ")> t1__
+    with t2__' := <pp-option(pp-one-Z(prettyprint-AbstractDeclarator))> t2__
+
+  is-TypeName =
+    ?TypeName(_, _)
+
+  prettyprint-AbstractDeclarator :
+    ADeclarator(t1__) -> [ H(
+                             [SOpt(HS(), "0")]
+                           , [t1__']
+                           )
+                         ]
+    with t1__' := <pp-one-Z(prettyprint-Ptr)> t1__
+
+  is-AbstractDeclarator =
+    ?ADeclarator(_)
+
+  prettyprint-AbstractDeclarator :
+    ADeclarator(t1__, t2__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [t1__', S(" "), t2__']
+                                 )
+                               ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-Ptr))> t1__
+    with t2__' := <pp-one-Z(prettyprint-DirectAbstractDeclarator)> t2__
+
+  is-AbstractDeclarator =
+    ?ADeclarator(_, _)
+
+  prettyprint-DirectAbstractDeclarator :
+    Parenthetical(t1__) -> [ H(
+                               [SOpt(HS(), "0")]
+                             , [ S("(")
+                               , t1__'
+                               , S(")")
+                               ]
+                             )
+                           ]
+    with t1__' := <pp-one-Z(prettyprint-AbstractDeclarator)> t1__
+
+  prettyprint-DirectAbstractDeclarator :
+    ArrayADeclarator(t1__, t2__, t3__) -> [ H(
+                                              [SOpt(HS(), "0")]
+                                            , [ t1__'
+                                              , S("[")
+                                              , t2__'
+                                              , S(" ")
+                                              , t3__'
+                                              , S("]")
+                                              ]
+                                            )
+                                          ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-DirectAbstractDeclarator))> t1__
+    with t2__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t2__
+    with t3__' := <pp-option(pp-one-Z(prettyprint-AssignExp))> t3__
+
+  is-DirectAbstractDeclarator =
+    ?ArrayADeclarator(_, _, _)
+
+  prettyprint-DirectAbstractDeclarator :
+    ArrayADeclarator(t1__, t2__, t3__) -> [ H(
+                                              [SOpt(HS(), "0")]
+                                            , [ t1__'
+                                              , S("[static ")
+                                              , t2__'
+                                              , S(" ")
+                                              , t3__'
+                                              , S("]")
+                                              ]
+                                            )
+                                          ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-DirectAbstractDeclarator))> t1__
+    with t2__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t2__
+    with t3__' := <pp-one-Z(prettyprint-AssignExp)> t3__
+
+  is-DirectAbstractDeclarator =
+    ?ArrayADeclarator(_, _, _)
+
+  prettyprint-DirectAbstractDeclarator :
+    ArrayADeclarator(t1__, t2__, t3__) -> [ H(
+                                              [SOpt(HS(), "0")]
+                                            , [ t1__'
+                                              , S("[")
+                                              , t2__'
+                                              , S(" static ")
+                                              , t3__'
+                                              , S("]")
+                                              ]
+                                            )
+                                          ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-DirectAbstractDeclarator))> t1__
+    with t2__' := <pp-H-list(prettyprint-TypeQualifier|" ")> t2__
+    with t3__' := <pp-one-Z(prettyprint-AssignExp)> t3__
+
+  is-DirectAbstractDeclarator =
+    ?ArrayADeclarator(_, _, _)
+
+  prettyprint-DirectAbstractDeclarator :
+    ArrayADeclarator(t1__) -> [ H(
+                                  [SOpt(HS(), "0")]
+                                , [t1__', S("[*]")]
+                                )
+                              ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-DirectAbstractDeclarator))> t1__
+
+  is-DirectAbstractDeclarator =
+    ?ArrayADeclarator(_)
+
+  prettyprint-DirectAbstractDeclarator :
+    FuncADeclarator(t1__, t2__) -> [ H(
+                                       [SOpt(HS(), "0")]
+                                     , [ t1__'
+                                       , S("(")
+                                       , t2__'
+                                       , S(")")
+                                       ]
+                                     )
+                                   ]
+    with t1__' := <pp-option(pp-one-Z(prettyprint-DirectAbstractDeclarator))> t1__
+    with t2__' := <pp-one-Z(prettyprint-ParamTypeList)> t2__
+
+  is-DirectAbstractDeclarator =
+    ?FuncADeclarator(_, _)
+
+  prettyprint-Initializer :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-Initializer)
+    where t1__' := <pp-one-Z(prettyprint-AssignExp)> t1__
+
+  prettyprint-Initializer :
+    Initializer(t1__, t2__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ S("{")
+                                   , t1__'
+                                   , t2__'
+                                   , S("}")
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-H-list(prettyprint-DesignationInit|", ")> t1__
+    with t2__' := <pp-option(pp-one-Z(prettyprint-Comma))> t2__
+
+  is-Initializer =
+    ?Initializer(_, _)
+
+  prettyprint-DesignationInit :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-DesignationInit)
+    where t1__' := <pp-one-Z(prettyprint-Initializer)> t1__
+
+  prettyprint-DesignationInit :
+    DesignationInit(t1__, t2__) -> [ H(
+                                       [SOpt(HS(), "0")]
+                                     , [t1__', S(" "), t2__']
+                                     )
+                                   ]
+    with t1__' := <pp-one-Z(prettyprint-Designation)> t1__
+    with t2__' := <pp-one-Z(prettyprint-Initializer)> t2__
+
+  is-DesignationInit =
+    ?DesignationInit(_, _)
+
+  prettyprint-Designation :
+    Designation(t1__) -> [ H(
+                             [SOpt(HS(), "0")]
+                           , [t1__', S(" = ")]
+                           )
+                         ]
+    with t1__' := <pp-H-list(prettyprint-Designator|" ")> t1__
+
+  is-Designation =
+    ?Designation(_)
+
+  prettyprint-Designator :
+    Designator(t1__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [ S("[")
+                            , t1__'
+                            , S("]")
+                            ]
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-ConstExp)> t1__
+
+  is-Designator =
+    ?Designator(_)
+
+  prettyprint-Designator :
+    Designator(t1__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [S("."), t1__']
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  is-Designator =
+    ?Designator(_)
+
+  prettyprint-StaticAssertDecl :
+    StaticAssertDecl(t1__, t2__) -> [ H(
+                                        [SOpt(HS(), "0")]
+                                      , [ S("_Static_assert(")
+                                        , t1__'
+                                        , S(", ")
+                                        , t2__'
+                                        , S(");")
+                                        ]
+                                      )
+                                    ]
+    with t1__' := <pp-one-Z(prettyprint-ConstExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-StringConst)> t2__
+
+  is-StaticAssertDecl =
+    ?StaticAssertDecl(_, _)
+
+  is-Decl =
+    fail
+
+  is-DeclSpec =
+    fail
+
+  is-DeclSpecs =
+    fail
+
+  is-InitDeclarator =
+    fail
+
+  is-StoreClassSpec =
+    fail
+
+  is-TypeSpec =
+    fail
+
+  is-StructOrUnionSpec =
+    fail
+
+  is-StructDecl =
+    fail
+
+  is-SpecifierQualifier =
+    fail
+
+  is-StructDeclarator =
+    fail
+
+  is-StructBitfieldDeclarator =
+    fail
+
+  is-EnumSpec =
+    fail
+
+  is-Enumerator =
+    fail
+
+  is-AtomicTypeSpec =
+    fail
+
+  is-TypeQualifier =
+    fail
+
+  is-FuncSpec =
+    fail
+
+  is-AlignSpec =
+    fail
+
+  is-Declarator =
+    fail
+
+  is-DirectDeclarator =
+    fail
+
+  is-FuncDeclarator =
+    fail
+
+  is-DirectFuncDeclarator =
+    fail
+
+  is-Ptr =
+    fail
+
+  is-ParamTypeList =
+    fail
+
+  is-ParamList =
+    fail
+
+  is-ParamDecl =
+    fail
+
+  is-TypeName =
+    fail
+
+  is-AbstractDeclarator =
+    fail
+
+  is-DirectAbstractDeclarator =
+    fail
+
+  is-Initializer =
+    fail
+
+  is-DesignationInit =
+    fail
+
+  is-Designation =
+    fail
+
+  is-Designator =
+    fail
+
+  is-StaticAssertDecl =
+    fail

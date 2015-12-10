@@ -1,0 +1,1 @@
+Module("runtime/editor/eclipse",[Rules([SDefT("project-path",[],[],[]),SDefT("plugin-path",[],[],[]),SDefT("refresh-workspace-file",[],[],[])])])

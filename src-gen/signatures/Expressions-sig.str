@@ -1,0 +1,99 @@
+module src-gen/signatures/Expressions-sig
+
+imports
+  src-gen/signatures/Declarations-sig
+  src-gen/signatures/Lexical-sig
+
+
+signature
+  constructors
+    DeclRef         : Id -> PrimExp
+                    : Constant -> PrimExp
+                    : GenSelect -> PrimExp
+    GenSelect       : AssignExp * List(GenAssoc) -> GenSelect
+    GenTypeAssoc    : TypeName * AssignExp -> GenAssoc
+    GenDefaultAssoc : AssignExp -> GenAssoc
+                    : PrimExp -> PostfixExp
+    ArrayAccess     : PostfixExp * Exp -> PostfixExp
+    Call            : PostfixExp * List(AssignExp) -> PostfixExp
+    Access          : PostfixExp * Id -> PostfixExp
+    DerefAccess     : PostfixExp * Id -> PostfixExp
+    PostInc         : PostfixExp -> PostfixExp
+    PostDec         : PostfixExp -> PostfixExp
+                    : PostfixExp -> UnaryExp
+    PreInc          : UnaryExp -> UnaryExp
+    PreDec          : UnaryExp -> UnaryExp
+    UnaryOp         : UnaryOp * CastExp -> UnaryExp
+    ExpSizeof       : UnaryExp -> UnaryExp
+    TypeSizeof      : TypeName -> UnaryExp
+    Alignof         : TypeName -> UnaryExp
+    Ref             : UnaryOp
+    Deref           : UnaryOp
+    Pos             : UnaryOp
+    Neg             : UnaryOp
+    BNot            : UnaryOp
+    LNot            : UnaryOp
+
+  constructors
+           : UnaryExp -> CastExp
+    Cast   : TypeName * CastExp -> CastExp
+           : CastExp -> MulExp
+    BinOp  : MulExp * MulOp * CastExp -> MulExp
+    Mul    : MulOp
+    Div    : MulOp
+    Mod    : MulOp
+           : MulExp -> AddExp
+    BinOp  : AddExp * AddOp * MulExp -> AddExp
+    Add    : AddOp
+    Sub    : AddOp
+           : AddExp -> ShiftExp
+    BinOp  : ShiftExp * ShiftOp * AddExp -> ShiftExp
+    LShift : ShiftOp
+    RShift : ShiftOp
+           : ShiftExp -> RelExp
+    BinOp  : RelExp * RelOp * ShiftExp -> RelExp
+    Lt     : RelOp
+    Gt     : RelOp
+    Lte    : RelOp
+    Gte    : RelOp
+           : RelExp -> EqExp
+    BinOp  : EqExp * EqOp * RelExp -> EqExp
+    Eq     : EqOp
+    Neq    : EqOp
+           : EqExp -> BAndExp
+    BinOp  : BAndExp * BAndOp * EqExp -> BAndExp
+    BAnd   : BAndOp
+           : BAndExp -> BXorExp
+    BinOp  : BXorExp * BXorOp * BAndExp -> BXorExp
+    BXor   : BXorOp
+           : BXorExp -> BOrExp
+    BinOp  : BOrExp * BOrOp * BXorExp -> BOrExp
+    BOr    : BOrOp
+           : BOrExp -> LAndExp
+    BinOp  : LAndExp * LAndOp * BOrExp -> LAndExp
+    LAnd   : LAndOp
+
+  constructors
+          : LAndExp -> LOrExp
+    BinOp : LOrExp * LOrOp * LAndExp -> LOrExp
+    LOr   : LOrOp
+
+  constructors
+              : LOrExp -> CondExp
+    IfExp     : LOrExp * Exp * CondExp -> CondExp
+              : CondExp -> AssignExp
+    AssignExp : UnaryExp * AssignOp * AssignExp -> AssignExp
+    Eq        : AssignOp
+    Mul       : AssignOp
+    Div       : AssignOp
+    Mod       : AssignOp
+    Add       : AssignOp
+    Sub       : AssignOp
+    LShift    : AssignOp
+    RShift    : AssignOp
+    BAnd      : AssignOp
+    BXor      : AssignOp
+    BOr       : AssignOp
+              : AssignExp -> Exp
+    Comma     : Exp * AssignExp -> Exp
+              : CondExp -> ConstExp

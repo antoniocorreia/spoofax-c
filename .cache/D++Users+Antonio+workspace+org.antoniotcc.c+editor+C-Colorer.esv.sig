@@ -1,0 +1,1 @@
+Module("C-Colorer",Imports([Import("C-Colorer.generated")]),[Colorer("",[])])

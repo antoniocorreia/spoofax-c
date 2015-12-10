@@ -1,0 +1,1 @@
+Module("runtime/analysis/analysis",[Imports([Import("libstratego-lib"),ImportWildcard("runtime/analysis"),ImportWildcard("runtime/index"),ImportWildcard("runtime/nabl"),ImportWildcard("runtime/properties"),ImportWildcard("runtime/relations"),ImportWildcard("runtime/task"),ImportWildcard("runtime/types")])])

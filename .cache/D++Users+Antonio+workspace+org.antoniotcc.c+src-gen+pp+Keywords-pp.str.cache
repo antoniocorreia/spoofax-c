@@ -1,0 +1,1 @@
+Module("src-gen/pp/Keywords-pp",[Imports([Import("libstratego-gpp"),Import("runtime/tmpl/pp"),Import("src-gen/signatures/Keywords-sig")]),Strategies([SDefNoArgs("prettyprint-Keyword",Build(NoAnnoList(List([NoAnnoList(Op("S",[RootApp(CallNoArgs(SVar("is-string")))]))])))),SDefNoArgs("prettyprint-example",CallNoArgs(SVar("prettyprint-Keyword")))])])

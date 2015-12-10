@@ -1,0 +1,134 @@
+
+module Declarations
+imports Expressions Lexical
+
+exports
+  context-free syntax
+    DeclSpecs {InitDeclarator ","}+ ";"                                 -> Decl                     {cons("Decl"), prefer}
+    DeclSpecs {InitDeclarator ","}* ";"                                 -> Decl                     {cons("Decl")}
+    StaticAssertDecl                                                    -> Decl                     
+    StoreClassSpec                                                      -> DeclSpec                 
+    TypeSpec                                                            -> DeclSpec                 
+    TypeQualifier                                                       -> DeclSpec                 
+    FuncSpec                                                            -> DeclSpec                 
+    AlignSpec                                                           -> DeclSpec                 
+    "DeclSpec+;" "{\"" "\"}"                                            -> DeclSpecs                
+    Declarator                                                          -> InitDeclarator           
+    Declarator "=" Initializer                                          -> InitDeclarator           {cons("Init")}
+    "typedef"                                                           -> StoreClassSpec           {cons("Typedef")}
+    "extern"                                                            -> StoreClassSpec           {cons("Extern")}
+    "static"                                                            -> StoreClassSpec           {cons("Static")}
+    "_Thead_local"                                                      -> StoreClassSpec           {cons("ThreadLocal")}
+    "auto"                                                              -> StoreClassSpec           {cons("Auto")}
+    "register"                                                          -> StoreClassSpec           {cons("Register")}
+    "void"                                                              -> TypeSpec                 {cons("Void")}
+    "char"                                                              -> TypeSpec                 {cons("Char")}
+    "short"                                                             -> TypeSpec                 {cons("Short")}
+    "int"                                                               -> TypeSpec                 {cons("Int")}
+    "long"                                                              -> TypeSpec                 {cons("Long")}
+    "float"                                                             -> TypeSpec                 {cons("Float")}
+    "double"                                                            -> TypeSpec                 {cons("Double")}
+    "signed"                                                            -> TypeSpec                 {cons("Signed")}
+    "unsigned"                                                          -> TypeSpec                 {cons("Unsigned")}
+    "_Bool"                                                             -> TypeSpec                 {cons("Bool")}
+    "_Complex"                                                          -> TypeSpec                 {cons("Complex")}
+    Id                                                                  -> TypeSpec                 {cons("DeclRef")}
+    AtomicTypeSpec                                                      -> TypeSpec                 
+    StructOrUnionSpec                                                   -> TypeSpec                 
+    EnumSpec                                                            -> TypeSpec                 
+    "struct" Id? "{" StructDecl+ "}"                                    -> StructOrUnionSpec        {cons("StructSpec")}
+    "struct" Id                                                         -> StructOrUnionSpec        {cons("StructSpec")}
+    "union" Id? "{" StructDecl+ "}"                                     -> StructOrUnionSpec        {cons("UnionSpec")}
+    "union" Id                                                          -> StructOrUnionSpec        {cons("UnionSpec")}
+    SpecifierQualifier+ {StructDeclarator ","}+ ";"                     -> StructDecl               {cons("FieldDecl"), prefer}
+    SpecifierQualifier+ {StructBitfieldDeclarator ","}* ";"             -> StructDecl               {cons("FieldDecl")}
+    StaticAssertDecl                                                    -> StructDecl               
+    TypeSpec                                                            -> SpecifierQualifier       
+    TypeQualifier                                                       -> SpecifierQualifier       
+    Declarator                                                          -> StructDeclarator         
+    Declarator ":" ConstExp                                             -> StructDeclarator         {cons("Bitfield")}
+    ":" ConstExp                                                        -> StructBitfieldDeclarator {cons("Bitfield")}
+    Declarator                                                          -> StructBitfieldDeclarator 
+    "enum" Id? "{" {Enumerator ","}+ Comma? "}"                         -> EnumSpec                 {cons("EnumSpec")}
+    "enum" Id                                                           -> EnumSpec                 {cons("EnumSpec")}
+    Id                                                                  -> Enumerator               {cons("EnumConst")}
+    Id "=" ConstExp                                                     -> Enumerator               {cons("EnumConst")}
+    "_Atomic" "(" TypeName ")"                                          -> AtomicTypeSpec           {cons("Atomic")}
+    "const"                                                             -> TypeQualifier            {cons("Const")}
+    "restrict"                                                          -> TypeQualifier            {cons("Restrict")}
+    "volatile"                                                          -> TypeQualifier            {cons("Volatile")}
+    "_Atomic"                                                           -> TypeQualifier            {cons("Atomic")}
+    "inline"                                                            -> FuncSpec                 {cons("Inline")}
+    "_Noreturn"                                                         -> FuncSpec                 {cons("NoReturn")}
+    "_Alignas" "(" TypeName ")"                                         -> AlignSpec                {cons("Alignas")}
+    "_Alignas" "(" ConstExp ")"                                         -> AlignSpec                {cons("Alignas")}
+    Ptr? DirectDeclarator                                               -> Declarator               {cons("Declarator")}
+    Id                                                                  -> DirectDeclarator         
+    "(" Declarator ")"                                                  -> DirectDeclarator         {bracket}
+    DirectDeclarator "[" TypeQualifier* AssignExp? "]"                  -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectDeclarator "[static" TypeQualifier* AssignExp "]"             -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectDeclarator "[" TypeQualifier+ "static" AssignExp "]"          -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectDeclarator "[" TypeQualifier+ "*]"                            -> DirectDeclarator         {cons("ArrayDeclarator")}
+    DirectFuncDeclarator                                                -> DirectDeclarator         
+    Ptr? DirectFuncDeclarator                                           -> FuncDeclarator           {cons("Declarator")}
+    DirectDeclarator "(" ParamList ")"                                  -> DirectFuncDeclarator     {cons("FuncDeclarator"), prefer}
+    DirectDeclarator "(" ParamTypeList ")"                              -> DirectFuncDeclarator     {cons("FuncDeclarator")}
+    "*" TypeQualifier*                                                  -> Ptr                      {cons("Ptr")}
+    "*" TypeQualifier* Ptr                                              -> Ptr                      {cons("Ptr")}
+    {ParamDecl ","}*                                                    -> ParamTypeList            {cons("ParamTypeList")}
+    {ParamDecl ","}+ "," "..."                                          -> ParamTypeList            {cons("ParamTypeVararg")}
+    {Id ","}+                                                           -> ParamList                {cons("ParamList")}
+    DeclSpecs AbstractDeclarator?                                       -> ParamDecl                {cons("ParamDecl"), avoid}
+    DeclSpecs Declarator                                                -> ParamDecl                {cons("ParamDecl")}
+    SpecifierQualifier+ AbstractDeclarator?                             -> TypeName                 {cons("TypeName")}
+    Ptr                                                                 -> AbstractDeclarator       {cons("ADeclarator")}
+    Ptr? DirectAbstractDeclarator                                       -> AbstractDeclarator       {cons("ADeclarator")}
+    "(" AbstractDeclarator ")"                                          -> DirectAbstractDeclarator {bracket}
+    DirectAbstractDeclarator? "[" TypeQualifier* AssignExp? "]"         -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "[static" TypeQualifier* AssignExp "]"    -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "[" TypeQualifier+ "static" AssignExp "]" -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "[*]"                                     -> DirectAbstractDeclarator {cons("ArrayADeclarator")}
+    DirectAbstractDeclarator? "(" ParamTypeList ")"                     -> DirectAbstractDeclarator {cons("FuncADeclarator")}
+    AssignExp                                                           -> Initializer              
+    "{" {DesignationInit ","}+ Comma? "}"                               -> Initializer              {cons("Initializer")}
+    Initializer                                                         -> DesignationInit          
+    Designation Initializer                                             -> DesignationInit          {cons("DesignationInit")}
+    Designator+ "="                                                     -> Designation              {cons("Designation")}
+    "[" ConstExp "]"                                                    -> Designator               {cons("Designator")}
+    "." Id                                                              -> Designator               {cons("Designator")}
+    "_Static_assert" "(" ConstExp "," StringConst ")" ";"               -> StaticAssertDecl         {cons("StaticAssertDecl")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> Decl                     {cons("COMPLETION-Decl")}
+    CONTENTCOMPLETE -> DeclSpec                 {cons("COMPLETION-DeclSpec")}
+    CONTENTCOMPLETE -> DeclSpecs                {cons("COMPLETION-DeclSpecs")}
+    CONTENTCOMPLETE -> InitDeclarator           {cons("COMPLETION-InitDeclarator")}
+    CONTENTCOMPLETE -> StoreClassSpec           {cons("COMPLETION-StoreClassSpec")}
+    CONTENTCOMPLETE -> TypeSpec                 {cons("COMPLETION-TypeSpec")}
+    CONTENTCOMPLETE -> StructOrUnionSpec        {cons("COMPLETION-StructOrUnionSpec")}
+    CONTENTCOMPLETE -> StructDecl               {cons("COMPLETION-StructDecl")}
+    CONTENTCOMPLETE -> SpecifierQualifier       {cons("COMPLETION-SpecifierQualifier")}
+    CONTENTCOMPLETE -> StructDeclarator         {cons("COMPLETION-StructDeclarator")}
+    CONTENTCOMPLETE -> StructBitfieldDeclarator {cons("COMPLETION-StructBitfieldDeclarator")}
+    CONTENTCOMPLETE -> EnumSpec                 {cons("COMPLETION-EnumSpec")}
+    CONTENTCOMPLETE -> Enumerator               {cons("COMPLETION-Enumerator")}
+    CONTENTCOMPLETE -> AtomicTypeSpec           {cons("COMPLETION-AtomicTypeSpec")}
+    CONTENTCOMPLETE -> TypeQualifier            {cons("COMPLETION-TypeQualifier")}
+    CONTENTCOMPLETE -> FuncSpec                 {cons("COMPLETION-FuncSpec")}
+    CONTENTCOMPLETE -> AlignSpec                {cons("COMPLETION-AlignSpec")}
+    CONTENTCOMPLETE -> Declarator               {cons("COMPLETION-Declarator")}
+    CONTENTCOMPLETE -> DirectDeclarator         {cons("COMPLETION-DirectDeclarator")}
+    CONTENTCOMPLETE -> FuncDeclarator           {cons("COMPLETION-FuncDeclarator")}
+    CONTENTCOMPLETE -> DirectFuncDeclarator     {cons("COMPLETION-DirectFuncDeclarator")}
+    CONTENTCOMPLETE -> Ptr                      {cons("COMPLETION-Ptr")}
+    CONTENTCOMPLETE -> ParamTypeList            {cons("COMPLETION-ParamTypeList")}
+    CONTENTCOMPLETE -> ParamList                {cons("COMPLETION-ParamList")}
+    CONTENTCOMPLETE -> ParamDecl                {cons("COMPLETION-ParamDecl")}
+    CONTENTCOMPLETE -> TypeName                 {cons("COMPLETION-TypeName")}
+    CONTENTCOMPLETE -> AbstractDeclarator       {cons("COMPLETION-AbstractDeclarator")}
+    CONTENTCOMPLETE -> DirectAbstractDeclarator {cons("COMPLETION-DirectAbstractDeclarator")}
+    CONTENTCOMPLETE -> Initializer              {cons("COMPLETION-Initializer")}
+    CONTENTCOMPLETE -> DesignationInit          {cons("COMPLETION-DesignationInit")}
+    CONTENTCOMPLETE -> Designation              {cons("COMPLETION-Designation")}
+    CONTENTCOMPLETE -> Designator               {cons("COMPLETION-Designator")}
+    CONTENTCOMPLETE -> StaticAssertDecl         {cons("COMPLETION-StaticAssertDecl")}

@@ -1,0 +1,1 @@
+Module("include/C-parenthesize",[Imports([Import("libstratego-lib")]),Strategies([SDefNoArgs("io-C-parenthesize",Call(SVar("io-wrap"),[Id])),SDefNoArgs("parenthesize-C",Id)])])

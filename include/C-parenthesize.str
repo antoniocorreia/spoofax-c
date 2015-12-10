@@ -1,0 +1,13 @@
+module include/C-parenthesize
+
+imports
+  libstratego-lib
+
+
+strategies
+  io-C-parenthesize =
+    io-wrap(id)
+
+  parenthesize-C =
+    id
+

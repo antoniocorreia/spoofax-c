@@ -1,0 +1,148 @@
+
+module src-gen/completions/Declarations-esv
+
+imports
+  src-gen/completions/Expressions-esv
+  src-gen/completions/Lexical-esv
+
+completions
+  completion template Decl : "DeclSpecs InitDeclarator;" =
+    <DeclSpecs:DeclSpecs> " " <InitDeclarator:InitDeclarator> ";"  
+  completion template Decl : "DeclSpecs ;" =
+    <DeclSpecs:DeclSpecs> " " <:InitDeclarator> ";"                
+  completion template DeclSpecs : "DeclSpec+; {\" \"}" =
+    "DeclSpec+; {\" \"}"                               
+  completion template InitDeclarator : "Declarator = Initializer" =
+    <Declarator:Declarator> " = " <Initializer:Initializer>  
+  completion template StoreClassSpec : "typedef" =
+    "typedef"                                                
+  completion template StoreClassSpec : "extern" =
+    "extern"                                                  
+  completion template StoreClassSpec : "static" =
+    "static"                                                  
+  completion template StoreClassSpec : "_Thead_local" =
+    "_Thead_local"                                      
+  completion template StoreClassSpec : "auto" =
+    "auto"                                                      
+  completion template StoreClassSpec : "register" =
+    "register"                                              
+  completion template TypeSpec : "void" =
+    "void"                                                            
+  completion template TypeSpec : "char" =
+    "char"                                                            
+  completion template TypeSpec : "short" =
+    "short"                                                          
+  completion template TypeSpec : "int" =
+    "int"                                                              
+  completion template TypeSpec : "long" =
+    "long"                                                            
+  completion template TypeSpec : "float" =
+    "float"                                                          
+  completion template TypeSpec : "double" =
+    "double"                                                        
+  completion template TypeSpec : "signed" =
+    "signed"                                                        
+  completion template TypeSpec : "unsigned" =
+    "unsigned"                                                    
+  completion template TypeSpec : "_Bool" =
+    "_Bool"                                                          
+  completion template TypeSpec : "_Complex" =
+    "_Complex"                                                    
+  completion template StructOrUnionSpec : "struct { StructDecl }" =
+    "struct " <:Id> " {\n\t" <StructDecl:StructDecl> "\n}" (blank)  
+  completion template StructOrUnionSpec : "struct Id" =
+    "struct " <Id:Id>                                   
+  completion template StructOrUnionSpec : "union { StructDecl }" =
+    "union " <:Id> " {\n\t" <StructDecl:StructDecl> "\n}" (blank)  
+  completion template StructOrUnionSpec : "union Id" =
+    "union " <Id:Id>                                     
+  completion template StructDecl : "SpecifierQualifier StructDeclarator;" =
+    <SpecifierQualifier:SpecifierQualifier> " " <StructDeclarator:StructDeclarator> ";"  
+  completion template StructDecl : "SpecifierQualifier ;" =
+    <SpecifierQualifier:SpecifierQualifier> " " <:StructBitfieldDeclarator> ";"  
+  completion template StructDeclarator : "Declarator : ConstExp" =
+    <Declarator:Declarator> " : " <ConstExp:ConstExp>  
+  completion template StructBitfieldDeclarator : " : ConstExp" =
+    " : " <ConstExp:ConstExp>                  
+  completion template EnumSpec : "enum { Enumerator }" =
+    "enum " <:Id> " {\n\t" <Enumerator:Enumerator> <:Comma> "\n}" (blank)  
+  completion template EnumSpec : "enum Id" =
+    "enum " <Id:Id>                                                
+  completion template Enumerator : "Id = ConstExp" =
+    <Id:Id> " = " <ConstExp:ConstExp>                      
+  completion template AtomicTypeSpec : "_Atomic(TypeName)" =
+    "_Atomic(" <TypeName:TypeName> ")"             
+  completion template TypeQualifier : "const" =
+    "const"                                                     
+  completion template TypeQualifier : "restrict" =
+    "restrict"                                               
+  completion template TypeQualifier : "volatile" =
+    "volatile"                                               
+  completion template TypeQualifier : "_Atomic" =
+    "_Atomic"                                                 
+  completion template FuncSpec : "inline" =
+    "inline"                                                        
+  completion template FuncSpec : "_Noreturn" =
+    "_Noreturn"                                                  
+  completion template AlignSpec : "_Alignas(TypeName)" =
+    "_Alignas(" <TypeName:TypeName> ")"                
+  completion template AlignSpec : "_Alignas(ConstExp)" =
+    "_Alignas(" <ConstExp:ConstExp> ")"                
+  completion template Declarator : " DirectDeclarator" =
+    <:Ptr> " " <DirectDeclarator:DirectDeclarator>     
+  completion template DirectDeclarator : "Id " =
+    <Id:Id> " "                                                
+  completion template DirectDeclarator : "(Declarator)" =
+    "(" <Declarator:Declarator> ")"                   
+  completion template DirectDeclarator : "DirectDeclarator[ ]" =
+    <DirectDeclarator:DirectDeclarator> "[" <:TypeQualifier> " " <:AssignExp> "]"  
+  completion template DirectDeclarator : "DirectDeclarator[static AssignExp]" =
+    <DirectDeclarator:DirectDeclarator> "[static " <:TypeQualifier> " " <AssignExp:AssignExp> "]"  
+  completion template DirectDeclarator : "DirectDeclarator[TypeQualifier static AssignExp]" =
+    <DirectDeclarator:DirectDeclarator> "[" <TypeQualifier:TypeQualifier> " static " <AssignExp:AssignExp> "]"  
+  completion template DirectDeclarator : "DirectDeclarator[TypeQualifier *]" =
+    <DirectDeclarator:DirectDeclarator> "[" <TypeQualifier:TypeQualifier> " *]"  
+  completion template FuncDeclarator : " DirectFuncDeclarator" =
+    <:Ptr> " " <DirectFuncDeclarator:DirectFuncDeclarator>  
+  completion template DirectFuncDeclarator : "DirectDeclarator(ParamList)" =
+    <DirectDeclarator:DirectDeclarator> "(" <ParamList:ParamList> ")"  
+  completion template DirectFuncDeclarator : "DirectDeclarator(ParamTypeList)" =
+    <DirectDeclarator:DirectDeclarator> "(" <ParamTypeList:ParamTypeList> ")"  
+  completion template Ptr : "*" =
+    "*" <:TypeQualifier>                                                      
+  completion template Ptr : "*Ptr" =
+    "*" <:TypeQualifier> <Ptr:Ptr>                                         
+  completion template ParamTypeList : "ParamDecl, ..." =
+    <ParamDecl:ParamDecl> ", ..."                      
+  completion template ParamDecl : "DeclSpecs " =
+    <DeclSpecs:DeclSpecs> " " <:AbstractDeclarator>            
+  completion template ParamDecl : "DeclSpecs Declarator" =
+    <DeclSpecs:DeclSpecs> " " <Declarator:Declarator>  
+  completion template TypeName : "SpecifierQualifier " =
+    <SpecifierQualifier:SpecifierQualifier> " " <:AbstractDeclarator>  
+  completion template AbstractDeclarator : " DirectAbstractDeclarator" =
+    <:Ptr> " " <DirectAbstractDeclarator:DirectAbstractDeclarator>  
+  completion template DirectAbstractDeclarator : "(AbstractDeclarator)" =
+    "(" <AbstractDeclarator:AbstractDeclarator> ")"  
+  completion template DirectAbstractDeclarator : "[ ]" =
+    <:DirectAbstractDeclarator> "[" <:TypeQualifier> " " <:AssignExp> "]"  
+  completion template DirectAbstractDeclarator : "[static AssignExp]" =
+    <:DirectAbstractDeclarator> "[static " <:TypeQualifier> " " <AssignExp:AssignExp> "]"  
+  completion template DirectAbstractDeclarator : "[TypeQualifier static AssignExp]" =
+    <:DirectAbstractDeclarator> "[" <TypeQualifier:TypeQualifier> " static " <AssignExp:AssignExp> "]"  
+  completion template DirectAbstractDeclarator : "[*]" =
+    <:DirectAbstractDeclarator> "[*]"                  
+  completion template DirectAbstractDeclarator : "(ParamTypeList)" =
+    <:DirectAbstractDeclarator> "(" <ParamTypeList:ParamTypeList> ")"  
+  completion template Initializer : "{DesignationInit}" =
+    "{" <DesignationInit:DesignationInit> <:Comma> "}"  
+  completion template DesignationInit : "Designation Initializer" =
+    <Designation:Designation> " " <Initializer:Initializer>  
+  completion template Designation : "Designator = " =
+    <Designator:Designator> " = "                         
+  completion template Designator : "[ConstExp]" =
+    "[" <ConstExp:ConstExp> "]"                               
+  completion template Designator : ".Id" =
+    "." <Id:Id>                                                      
+  completion template StaticAssertDecl : "_Static_assert(ConstExp, StringConst);" =
+    "_Static_assert(" <ConstExp:ConstExp> ", " <StringConst:StringConst> ");"  

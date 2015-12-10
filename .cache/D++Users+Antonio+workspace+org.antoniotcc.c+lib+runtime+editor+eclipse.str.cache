@@ -1,0 +1,1 @@
+Module("runtime/editor/eclipse",[Rules([SDefNoArgs("project-path",PrimNoArgs("\"SSL_EXT_projectpath\"")),SDefNoArgs("plugin-path",PrimNoArgs("\"SSL_EXT_pluginpath\"")),RDefNoArgs("refresh-workspace-file",RuleNoCond(Var("path"),RootApp(Prim("\"SSL_EXT_refreshresource\"",[Var("path")]))))])])

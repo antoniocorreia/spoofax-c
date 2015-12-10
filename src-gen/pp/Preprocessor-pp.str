@@ -1,0 +1,119 @@
+module src-gen/pp/Preprocessor-pp
+
+imports
+  libstratego-gpp
+  runtime/tmpl/pp
+  src-gen/signatures/Preprocessor-sig
+
+
+imports
+  src-gen/signatures/Lexical-sig
+
+
+imports
+  src-gen/pp/Lexical-pp
+
+
+strategies
+  prettyprint-PPToken =
+    ![S(<is-string>)]
+
+  prettyprint-PPTokenSeq =
+    ![S(<is-string>)]
+
+  prettyprint-PPWS =
+    ![S(<is-string>)]
+
+  prettyprint-PPNL =
+    ![S(<is-string>)]
+
+  prettyprint-PPHChar =
+    ![S(<is-string>)]
+
+  prettyprint-PPQChar =
+    ![S(<is-string>)]
+
+  prettyprint-PPHeaderName =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-PPToken
+
+  prettyprint-example =
+    prettyprint-PPTokenSeq
+
+  prettyprint-example =
+    prettyprint-PPWS
+
+  prettyprint-example =
+    prettyprint-PPNL
+
+  prettyprint-example =
+    prettyprint-PPHChar
+
+  prettyprint-example =
+    prettyprint-PPQChar
+
+  prettyprint-example =
+    prettyprint-PPHeaderName
+
+
+strategies
+  prettyprint-ControlLine =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-ControlLine
+
+
+strategies
+  prettyprint-example =
+    prettyprint-ExternalDecl
+
+  prettyprint-example =
+    prettyprint-StructDecl
+
+  prettyprint-example =
+    prettyprint-Stm
+
+  prettyprint-ExternalDecl :
+    PP(t1__) -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [t1__']
+                  )
+                ]
+    with t1__' := <pp-one-Z(prettyprint-ControlLine)> t1__
+
+  is-ExternalDecl =
+    ?PP(_)
+
+  prettyprint-StructDecl :
+    PP(t1__) -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [t1__']
+                  )
+                ]
+    with t1__' := <pp-one-Z(prettyprint-ControlLine)> t1__
+
+  is-StructDecl =
+    ?PP(_)
+
+  prettyprint-Stm :
+    PP(t1__) -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [t1__']
+                  )
+                ]
+    with t1__' := <pp-one-Z(prettyprint-ControlLine)> t1__
+
+  is-Stm =
+    ?PP(_)
+
+  is-ExternalDecl =
+    fail
+
+  is-StructDecl =
+    fail
+
+  is-Stm =
+    fail

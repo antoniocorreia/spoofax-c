@@ -1,0 +1,100 @@
+module src-gen/signatures/Declarations-sig
+
+imports
+  src-gen/signatures/Expressions-sig
+  src-gen/signatures/Lexical-sig
+
+
+signature
+  constructors
+    Decl             : DeclSpecs * List(InitDeclarator) -> Decl
+    Decl             : DeclSpecs * List(InitDeclarator) -> Decl
+                     : StaticAssertDecl -> Decl
+                     : StoreClassSpec -> DeclSpec
+                     : TypeSpec -> DeclSpec
+                     : TypeQualifier -> DeclSpec
+                     : FuncSpec -> DeclSpec
+                     : AlignSpec -> DeclSpec
+                     : DeclSpecs
+                     : Declarator -> InitDeclarator
+    Init             : Declarator * Initializer -> InitDeclarator
+    Typedef          : StoreClassSpec
+    Extern           : StoreClassSpec
+    Static           : StoreClassSpec
+    ThreadLocal      : StoreClassSpec
+    Auto             : StoreClassSpec
+    Register         : StoreClassSpec
+    Void             : TypeSpec
+    Char             : TypeSpec
+    Short            : TypeSpec
+    Int              : TypeSpec
+    Long             : TypeSpec
+    Float            : TypeSpec
+    Double           : TypeSpec
+    Signed           : TypeSpec
+    Unsigned         : TypeSpec
+    Bool             : TypeSpec
+    Complex          : TypeSpec
+    DeclRef          : Id -> TypeSpec
+                     : AtomicTypeSpec -> TypeSpec
+                     : StructOrUnionSpec -> TypeSpec
+                     : EnumSpec -> TypeSpec
+    StructSpec       : Option(Id) * List(StructDecl) -> StructOrUnionSpec
+    StructSpec       : Id -> StructOrUnionSpec
+    UnionSpec        : Option(Id) * List(StructDecl) -> StructOrUnionSpec
+    UnionSpec        : Id -> StructOrUnionSpec
+    FieldDecl        : List(SpecifierQualifier) * List(StructDeclarator) -> StructDecl
+    FieldDecl        : List(SpecifierQualifier) * List(StructBitfieldDeclarator) -> StructDecl
+                     : StaticAssertDecl -> StructDecl
+                     : TypeSpec -> SpecifierQualifier
+                     : TypeQualifier -> SpecifierQualifier
+                     : Declarator -> StructDeclarator
+    Bitfield         : Declarator * ConstExp -> StructDeclarator
+    Bitfield         : ConstExp -> StructBitfieldDeclarator
+                     : Declarator -> StructBitfieldDeclarator
+    EnumSpec         : Option(Id) * List(Enumerator) * Option(Comma) -> EnumSpec
+    EnumSpec         : Id -> EnumSpec
+    EnumConst        : Id -> Enumerator
+    EnumConst        : Id * ConstExp -> Enumerator
+    Atomic           : TypeName -> AtomicTypeSpec
+    Const            : TypeQualifier
+    Restrict         : TypeQualifier
+    Volatile         : TypeQualifier
+    Atomic           : TypeQualifier
+    Inline           : FuncSpec
+    NoReturn         : FuncSpec
+    Alignas          : TypeName -> AlignSpec
+    Alignas          : ConstExp -> AlignSpec
+    Declarator       : Option(Ptr) * DirectDeclarator -> Declarator
+                     : Id -> DirectDeclarator
+    ArrayDeclarator  : DirectDeclarator * List(TypeQualifier) * Option(AssignExp) -> DirectDeclarator
+    ArrayDeclarator  : DirectDeclarator * List(TypeQualifier) * AssignExp -> DirectDeclarator
+    ArrayDeclarator  : DirectDeclarator * List(TypeQualifier) * AssignExp -> DirectDeclarator
+    ArrayDeclarator  : DirectDeclarator * List(TypeQualifier) -> DirectDeclarator
+                     : DirectFuncDeclarator -> DirectDeclarator
+    Declarator       : Option(Ptr) * DirectFuncDeclarator -> FuncDeclarator
+    FuncDeclarator   : DirectDeclarator * ParamList -> DirectFuncDeclarator
+    FuncDeclarator   : DirectDeclarator * ParamTypeList -> DirectFuncDeclarator
+    Ptr              : List(TypeQualifier) -> Ptr
+    Ptr              : List(TypeQualifier) * Ptr -> Ptr
+    ParamTypeList    : List(ParamDecl) -> ParamTypeList
+    ParamTypeVararg  : List(ParamDecl) -> ParamTypeList
+    ParamList        : List(Id) -> ParamList
+    ParamDecl        : DeclSpecs * Option(AbstractDeclarator) -> ParamDecl
+    ParamDecl        : DeclSpecs * Declarator -> ParamDecl
+    TypeName         : List(SpecifierQualifier) * Option(AbstractDeclarator) -> TypeName
+    ADeclarator      : Ptr -> AbstractDeclarator
+    ADeclarator      : Option(Ptr) * DirectAbstractDeclarator -> AbstractDeclarator
+    ArrayADeclarator : Option(DirectAbstractDeclarator) * List(TypeQualifier) * Option(AssignExp) -> DirectAbstractDeclarator
+    ArrayADeclarator : Option(DirectAbstractDeclarator) * List(TypeQualifier) * AssignExp -> DirectAbstractDeclarator
+    ArrayADeclarator : Option(DirectAbstractDeclarator) * List(TypeQualifier) * AssignExp -> DirectAbstractDeclarator
+    ArrayADeclarator : Option(DirectAbstractDeclarator) -> DirectAbstractDeclarator
+    FuncADeclarator  : Option(DirectAbstractDeclarator) * ParamTypeList -> DirectAbstractDeclarator
+                     : AssignExp -> Initializer
+    Initializer      : List(DesignationInit) * Option(Comma) -> Initializer
+                     : Initializer -> DesignationInit
+    DesignationInit  : Designation * Initializer -> DesignationInit
+    Designation      : List(Designator) -> Designation
+    Designator       : ConstExp -> Designator
+    Designator       : Id -> Designator
+    StaticAssertDecl : ConstExp * StringConst -> StaticAssertDecl

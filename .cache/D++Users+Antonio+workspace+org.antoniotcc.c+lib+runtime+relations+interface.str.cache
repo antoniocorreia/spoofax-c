@@ -1,0 +1,1 @@
+Module("runtime/relations/interface",[Strategies([SDef("relation-store-value",[DefaultVarDec("store")],Fail),SDefNoArgs("relation-match-tuple",Fail),SDefT("relation-match-custom",[],[DefaultVarDec("ctx")],Fail),SDefNoArgs("relation-is-transitive",Fail),SDefNoArgs("relation-is-reflexive",Fail),SDefNoArgs("relation-is-symmetric",Fail)])])

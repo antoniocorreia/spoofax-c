@@ -1,0 +1,70 @@
+module src-gen/signatures/Lexical-sig
+
+imports
+  src-gen/signatures/Keywords-sig
+
+
+signature
+  constructors
+     : String -> Asterisk
+     : String -> Comment
+     : String -> EOF
+
+  constructors
+     : String -> Comma
+     : String -> Sign
+
+  constructors
+     : String -> Id
+
+  constructors
+    CharConst   : CharConst -> Constant
+    IntConst    : IntConst -> Constant
+    OctConst    : OctConst -> Constant
+    HexConst    : HexConst -> Constant
+    FloatConst  : FloatConst -> Constant
+    StringConst : StringConst -> Constant
+
+  constructors
+     : String -> IntConst
+     : String -> IntSuffix
+     : String -> UnsignedSuffix
+     : String -> LongSuffix
+     : String -> LongLongSuffix
+     : String -> Digit
+     : String -> NonzeroDigit
+
+  constructors
+     : String -> OctConst
+     : String -> OctDigit
+
+  constructors
+     : String -> HexConst
+     : String -> HexPrefix
+     : String -> HexDigit
+
+  constructors
+     : String -> FloatConst
+     : String -> DecFloatConst
+     : String -> FracConst
+     : String -> ExpPart
+     : String -> BinExpPart
+     : String -> HexFloatConst
+     : String -> HexFracConst
+     : String -> FloatSuffix
+
+  constructors
+     : String -> UniCharName
+     : String -> HexQuad
+
+  constructors
+     : String -> EscSeq
+
+  constructors
+     : String -> CharConst
+     : String -> Char
+
+  constructors
+     : String -> StringConst
+     : String -> EncPrefix
+     : String -> SChar

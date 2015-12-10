@@ -1,0 +1,10 @@
+module editor/C-Outliner.generated
+
+imports
+  
+  include/C
+  lib/runtime/editor/outline-library
+
+rules
+  
+  to-outline-label = fail

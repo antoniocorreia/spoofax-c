@@ -1,0 +1,39 @@
+module Statements
+imports Declarations Expressions Lexical
+
+exports
+  context-free syntax
+    LabeledStm                               -> Stm          
+    CompoundStm                              -> Stm          
+    ExpStm                                   -> Stm          
+    SelectionStm                             -> Stm          
+    IterStm                                  -> Stm          
+    JmpStm                                   -> Stm          
+    Id ":" Stm                               -> LabeledStm   {cons("Label")}
+    "case" ConstExp ":" Stm                  -> LabeledStm   {cons("Case")}
+    "default" ":" Stm                        -> LabeledStm   {cons("Default")}
+    "{" BlockItem* "}"                       -> CompoundStm  {cons("Block")}
+    Decl                                     -> BlockItem    
+    Stm                                      -> BlockItem    
+    Exp? ";"                                 -> ExpStm       {cons("ExpStm")}
+    "if" "(" Exp ")" Stm                     -> SelectionStm {cons("If"), prefer}
+    "if" "(" Exp ")" Stm "else" Stm          -> SelectionStm {cons("IfElse")}
+    "switch" "(" Exp ")" Stm                 -> SelectionStm {cons("Switch")}
+    "while" "(" Exp ")" Stm                  -> IterStm      {cons("While")}
+    "do" Stm "while" "(" Exp ")"             -> IterStm      {cons("Do")}
+    "for" "(" Exp? ";" Exp? ";" Exp? ")" Stm -> IterStm      {cons("For")}
+    "for" "(" Decl Exp? ";" Exp? ")" Stm     -> IterStm      {cons("DeclFor")}
+    "goto" Id ";"                            -> JmpStm       {cons("Goto")}
+    "continue;"                              -> JmpStm       {cons("Continue")}
+    "break;"                                 -> JmpStm       {cons("Break")}
+    "return" Exp? ";"                        -> JmpStm       {cons("Return")}
+
+  context-free syntax
+    CONTENTCOMPLETE -> Stm          {cons("COMPLETION-Stm")}
+    CONTENTCOMPLETE -> LabeledStm   {cons("COMPLETION-LabeledStm")}
+    CONTENTCOMPLETE -> CompoundStm  {cons("COMPLETION-CompoundStm")}
+    CONTENTCOMPLETE -> BlockItem    {cons("COMPLETION-BlockItem")}
+    CONTENTCOMPLETE -> ExpStm       {cons("COMPLETION-ExpStm")}
+    CONTENTCOMPLETE -> SelectionStm {cons("COMPLETION-SelectionStm")}
+    CONTENTCOMPLETE -> IterStm      {cons("COMPLETION-IterStm")}
+    CONTENTCOMPLETE -> JmpStm       {cons("COMPLETION-JmpStm")}

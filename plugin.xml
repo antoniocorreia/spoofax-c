@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.imp.runtime.languageDescription">
+      <language
+            extensions="c"
+            description="C"
+            language="C"
+            derivedFrom="DynamicRoot"
+            validator="org.antoniotcc.c.CValidator"
+            validatorClass="org.antoniotcc.c.CValidator"
+      ></language>
+   </extension>
+   <extension
+         id="org.antoniotcc.c.parser"
+         name="C Parser"
+         point="org.eclipse.imp.runtime.parser">
+      <parser
+            class="org.antoniotcc.c.CParseController"
+            language="C">
+      </parser>
+   </extension>    
+</plugin>

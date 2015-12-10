@@ -1,0 +1,23 @@
+module src-gen/signatures/Preprocessor-sig
+
+imports
+  src-gen/signatures/Lexical-sig
+
+
+signature
+  constructors
+     : String -> PPToken
+     : String -> PPTokenSeq
+     : String -> PPWS
+     : String -> PPNL
+     : String -> PPHChar
+     : String -> PPQChar
+     : String -> PPHeaderName
+
+  constructors
+     : String -> ControlLine
+
+  constructors
+    PP : ControlLine -> ExternalDecl
+    PP : ControlLine -> StructDecl
+    PP : ControlLine -> Stm

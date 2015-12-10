@@ -1,0 +1,40 @@
+module src-gen/completions/Statements-esv
+
+imports
+  src-gen/completions/Declarations-esv
+  src-gen/completions/Expressions-esv
+  src-gen/completions/Lexical-esv
+
+completions
+  completion template LabeledStm : "Id : Stm" =
+    <Id:Id> " : " <Stm:Stm>  
+  completion template LabeledStm : "case ConstExp : Stm" =
+    "case " <ConstExp:ConstExp> " : " <Stm:Stm>  
+  completion template LabeledStm : "default : Stm" =
+    "default : " <Stm:Stm>  
+  completion template CompoundStm : "{ }" =
+    "{\n\t" (cursor) "\n}" (blank)  
+  completion template ExpStm : ";" =
+    <:Exp> ";"           
+  completion template SelectionStm : "if(Exp) Stm" =
+    "if(" <Exp:Exp> ") " <Stm:Stm>  
+  completion template SelectionStm : "if(Exp) Stm else Stm" =
+    "if(" <Exp:Exp> ") " <Stm:Stm> " else " <Stm:Stm>  
+  completion template SelectionStm : "switch(Exp) Stm" =
+    "switch(" <Exp:Exp> ") " <Stm:Stm>  
+  completion template IterStm : "while(Exp) Stm" =
+    "while(" <Exp:Exp> ") " <Stm:Stm>  
+  completion template IterStm : "do Stm while(Exp)" =
+    "do " <Stm:Stm> " while(" <Exp:Exp> ")"  
+  completion template IterStm : "for(; ; ) Stm" =
+    "for(" <:Exp> "; " <:Exp> "; " <:Exp> ") " <Stm:Stm>  
+  completion template IterStm : "for(Decl ; ) Stm" =
+    "for(" <Decl:Decl> " " <:Exp> "; " <:Exp> ") " <Stm:Stm>  
+  completion template JmpStm : "goto Id;" =
+    "goto " <Id:Id> ";"  
+  completion template JmpStm : "continue;" =
+    "continue;"  
+  completion template JmpStm : "break;" =
+    "break;"        
+  completion template JmpStm : "return ;" =
+    "return " <:Exp> ";"  

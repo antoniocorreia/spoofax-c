@@ -1,0 +1,34 @@
+module src-gen/signatures/Statements-sig
+
+imports
+  src-gen/signatures/Declarations-sig
+  src-gen/signatures/Expressions-sig
+  src-gen/signatures/Lexical-sig
+
+
+signature
+  constructors
+             : LabeledStm -> Stm
+             : CompoundStm -> Stm
+             : ExpStm -> Stm
+             : SelectionStm -> Stm
+             : IterStm -> Stm
+             : JmpStm -> Stm
+    Label    : Id * Stm -> LabeledStm
+    Case     : ConstExp * Stm -> LabeledStm
+    Default  : Stm -> LabeledStm
+    Block    : List(BlockItem) -> CompoundStm
+             : Decl -> BlockItem
+             : Stm -> BlockItem
+    ExpStm   : Option(Exp) -> ExpStm
+    If       : Exp * Stm -> SelectionStm
+    IfElse   : Exp * Stm * Stm -> SelectionStm
+    Switch   : Exp * Stm -> SelectionStm
+    While    : Exp * Stm -> IterStm
+    Do       : Stm * Exp -> IterStm
+    For      : Option(Exp) * Option(Exp) * Option(Exp) * Stm -> IterStm
+    DeclFor  : Decl * Option(Exp) * Option(Exp) * Stm -> IterStm
+    Goto     : Id -> JmpStm
+    Continue : JmpStm
+    Break    : JmpStm
+    Return   : Option(Exp) -> JmpStm

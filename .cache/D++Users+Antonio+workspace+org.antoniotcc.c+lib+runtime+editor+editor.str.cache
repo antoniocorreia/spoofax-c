@@ -1,0 +1,1 @@
+Module("runtime/editor/editor",[Imports([Import("libstratego-lib"),ImportWildcard("runtime/editor")])])

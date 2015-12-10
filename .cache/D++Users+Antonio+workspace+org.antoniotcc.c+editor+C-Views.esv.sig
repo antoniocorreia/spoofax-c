@@ -1,0 +1,1 @@
+Module("C-Views",NoImports,[Views([OutlineView(Strategy("editor-outline"),[Source],Some(ExpandToLevel("3"))),PropertiesView(Strategy("editor-properties"),[])])])

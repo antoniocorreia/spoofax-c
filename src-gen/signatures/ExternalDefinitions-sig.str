@@ -1,0 +1,13 @@
+module src-gen/signatures/ExternalDefinitions-sig
+
+imports
+  src-gen/signatures/Declarations-sig
+  src-gen/signatures/Statements-sig
+
+
+signature
+  constructors
+    TranslationUnit : TranslationUnit
+                    : FuncDef -> ExternalDecl
+                    : Decl -> ExternalDecl
+    FuncDef         : List(DeclSpec) * FuncDeclarator * List(Decl) * CompoundStm -> FuncDef

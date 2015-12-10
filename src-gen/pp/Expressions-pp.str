@@ -1,0 +1,1194 @@
+module src-gen/pp/Expressions-pp
+
+imports
+  libstratego-gpp
+  runtime/tmpl/pp
+  src-gen/signatures/Expressions-sig
+
+
+imports
+  src-gen/signatures/Declarations-sig
+  src-gen/signatures/Lexical-sig
+
+
+imports
+  src-gen/pp/Declarations-pp
+  src-gen/pp/Lexical-pp
+
+
+strategies
+  prettyprint-example =
+    prettyprint-PrimExp
+
+  prettyprint-example =
+    prettyprint-GenSelect
+
+  prettyprint-example =
+    prettyprint-GenAssoc
+
+  prettyprint-example =
+    prettyprint-PostfixExp
+
+  prettyprint-example =
+    prettyprint-UnaryExp
+
+  prettyprint-example =
+    prettyprint-UnaryOp
+
+  prettyprint-PrimExp :
+    DeclRef(t1__) -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [t1__']
+                       )
+                     ]
+    with t1__' := <pp-one-Z(prettyprint-Id)> t1__
+
+  is-PrimExp =
+    ?DeclRef(_)
+
+  prettyprint-PrimExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-PrimExp)
+    where t1__' := <pp-one-Z(prettyprint-Constant)> t1__
+
+  prettyprint-PrimExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-PrimExp)
+    where t1__' := <pp-one-Z(prettyprint-GenSelect)> t1__
+
+  prettyprint-PrimExp :
+    Parenthetical(t1__) -> [ H(
+                               [SOpt(HS(), "0")]
+                             , [ S("(")
+                               , t1__'
+                               , S(")")
+                               ]
+                             )
+                           ]
+    with t1__' := <pp-one-Z(prettyprint-Exp)> t1__
+
+  prettyprint-GenSelect :
+    GenSelect(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [ S("_Generic(")
+                                 , t1__'
+                                 , S(", ")
+                                 , t2__'
+                                 , S(")")
+                                 ]
+                               )
+                             ]
+    with t1__' := <pp-one-Z(prettyprint-AssignExp)> t1__
+    with t2__' := <pp-H-list(prettyprint-GenAssoc|", ")> t2__
+
+  is-GenSelect =
+    ?GenSelect(_, _)
+
+  prettyprint-GenAssoc :
+    GenTypeAssoc(t1__, t2__) -> [ H(
+                                    [SOpt(HS(), "0")]
+                                  , [t1__', S(" : "), t2__']
+                                  )
+                                ]
+    with t1__' := <pp-one-Z(prettyprint-TypeName)> t1__
+    with t2__' := <pp-one-Z(prettyprint-AssignExp)> t2__
+
+  is-GenAssoc =
+    ?GenTypeAssoc(_, _)
+
+  prettyprint-GenAssoc :
+    GenDefaultAssoc(t1__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [S("default : "), t1__']
+                               )
+                             ]
+    with t1__' := <pp-one-Z(prettyprint-AssignExp)> t1__
+
+  is-GenAssoc =
+    ?GenDefaultAssoc(_)
+
+  prettyprint-PostfixExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-PostfixExp)
+    where t1__' := <pp-one-Z(prettyprint-PrimExp)> t1__
+
+  prettyprint-PostfixExp :
+    ArrayAccess(t1__, t2__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S("[")
+                                   , t2__'
+                                   , S("]")
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-PostfixExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-Exp)> t2__
+
+  is-PostfixExp =
+    ?ArrayAccess(_, _)
+
+  prettyprint-PostfixExp :
+    Call(t1__, t2__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [ t1__'
+                            , S("(")
+                            , t2__'
+                            , S(")")
+                            ]
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-PostfixExp)> t1__
+    with t2__' := <pp-H-list(prettyprint-AssignExp|", ")> t2__
+
+  is-PostfixExp =
+    ?Call(_, _)
+
+  prettyprint-PostfixExp :
+    Access(t1__, t2__) -> [ H(
+                              [SOpt(HS(), "0")]
+                            , [t1__', S("."), t2__']
+                            )
+                          ]
+    with t1__' := <pp-one-Z(prettyprint-PostfixExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-Id)> t2__
+
+  is-PostfixExp =
+    ?Access(_, _)
+
+  prettyprint-PostfixExp :
+    DerefAccess(t1__, t2__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [t1__', S("->"), t2__']
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-PostfixExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-Id)> t2__
+
+  is-PostfixExp =
+    ?DerefAccess(_, _)
+
+  prettyprint-PostfixExp :
+    PostInc(t1__) -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [t1__', S("++")]
+                       )
+                     ]
+    with t1__' := <pp-one-Z(prettyprint-PostfixExp)> t1__
+
+  is-PostfixExp =
+    ?PostInc(_)
+
+  prettyprint-PostfixExp :
+    PostDec(t1__) -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [t1__', S("--")]
+                       )
+                     ]
+    with t1__' := <pp-one-Z(prettyprint-PostfixExp)> t1__
+
+  is-PostfixExp =
+    ?PostDec(_)
+
+  prettyprint-UnaryExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-UnaryExp)
+    where t1__' := <pp-one-Z(prettyprint-PostfixExp)> t1__
+
+  prettyprint-UnaryExp :
+    PreInc(t1__) -> [ H(
+                        [SOpt(HS(), "0")]
+                      , [S("++"), t1__']
+                      )
+                    ]
+    with t1__' := <pp-one-Z(prettyprint-UnaryExp)> t1__
+
+  is-UnaryExp =
+    ?PreInc(_)
+
+  prettyprint-UnaryExp :
+    PreDec(t1__) -> [ H(
+                        [SOpt(HS(), "0")]
+                      , [S("--"), t1__']
+                      )
+                    ]
+    with t1__' := <pp-one-Z(prettyprint-UnaryExp)> t1__
+
+  is-UnaryExp =
+    ?PreDec(_)
+
+  prettyprint-UnaryExp :
+    UnaryOp(t1__, t2__) -> [ H(
+                               [SOpt(HS(), "0")]
+                             , [t1__', t2__']
+                             )
+                           ]
+    with t1__' := <pp-one-Z(prettyprint-UnaryOp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-CastExp)> t2__
+
+  is-UnaryExp =
+    ?UnaryOp(_, _)
+
+  prettyprint-UnaryExp :
+    ExpSizeof(t1__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [S("sizeof"), t1__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-UnaryExp)> t1__
+
+  is-UnaryExp =
+    ?ExpSizeof(_)
+
+  prettyprint-UnaryExp :
+    TypeSizeof(t1__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [ S("sizeof(")
+                            , t1__'
+                            , S(")")
+                            ]
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-TypeName)> t1__
+
+  is-UnaryExp =
+    ?TypeSizeof(_)
+
+  prettyprint-UnaryExp :
+    Alignof(t1__) -> [ H(
+                         [SOpt(HS(), "0")]
+                       , [ S("_Alignof(")
+                         , t1__'
+                         , S(")")
+                         ]
+                       )
+                     ]
+    with t1__' := <pp-one-Z(prettyprint-TypeName)> t1__
+
+  is-UnaryExp =
+    ?Alignof(_)
+
+  prettyprint-UnaryOp :
+    Ref() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("&")]
+               )
+             ]
+
+  is-UnaryOp =
+    ?Ref()
+
+  prettyprint-UnaryOp :
+    Deref() -> [ H(
+                   [SOpt(HS(), "0")]
+                 , [S("*")]
+                 )
+               ]
+
+  is-UnaryOp =
+    ?Deref()
+
+  prettyprint-UnaryOp :
+    Pos() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("+")]
+               )
+             ]
+
+  is-UnaryOp =
+    ?Pos()
+
+  prettyprint-UnaryOp :
+    Neg() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("-")]
+               )
+             ]
+
+  is-UnaryOp =
+    ?Neg()
+
+  prettyprint-UnaryOp :
+    BNot() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("~")]
+                )
+              ]
+
+  is-UnaryOp =
+    ?BNot()
+
+  prettyprint-UnaryOp :
+    LNot() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("!")]
+                )
+              ]
+
+  is-UnaryOp =
+    ?LNot()
+
+  is-PrimExp =
+    fail
+
+  is-GenSelect =
+    fail
+
+  is-GenAssoc =
+    fail
+
+  is-PostfixExp =
+    fail
+
+  is-UnaryExp =
+    fail
+
+  is-UnaryOp =
+    fail
+
+
+strategies
+  prettyprint-example =
+    prettyprint-CastExp
+
+  prettyprint-example =
+    prettyprint-MulExp
+
+  prettyprint-example =
+    prettyprint-MulOp
+
+  prettyprint-example =
+    prettyprint-AddExp
+
+  prettyprint-example =
+    prettyprint-AddOp
+
+  prettyprint-example =
+    prettyprint-ShiftExp
+
+  prettyprint-example =
+    prettyprint-ShiftOp
+
+  prettyprint-example =
+    prettyprint-RelExp
+
+  prettyprint-example =
+    prettyprint-RelOp
+
+  prettyprint-example =
+    prettyprint-EqExp
+
+  prettyprint-example =
+    prettyprint-EqOp
+
+  prettyprint-example =
+    prettyprint-BAndExp
+
+  prettyprint-example =
+    prettyprint-BAndOp
+
+  prettyprint-example =
+    prettyprint-BXorExp
+
+  prettyprint-example =
+    prettyprint-BXorOp
+
+  prettyprint-example =
+    prettyprint-BOrExp
+
+  prettyprint-example =
+    prettyprint-BOrOp
+
+  prettyprint-example =
+    prettyprint-LAndExp
+
+  prettyprint-example =
+    prettyprint-LAndOp
+
+  prettyprint-CastExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-CastExp)
+    where t1__' := <pp-one-Z(prettyprint-UnaryExp)> t1__
+
+  prettyprint-CastExp :
+    Cast(t1__, t2__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [ S("(")
+                            , t1__'
+                            , S(")")
+                            , t2__'
+                            ]
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-TypeName)> t1__
+    with t2__' := <pp-one-Z(prettyprint-CastExp)> t2__
+
+  is-CastExp =
+    ?Cast(_, _)
+
+  prettyprint-MulExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-MulExp)
+    where t1__' := <pp-one-Z(prettyprint-CastExp)> t1__
+
+  prettyprint-MulExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-MulExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-MulOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-CastExp)> t3__
+
+  is-MulExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-MulOp :
+    Mul() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("*")]
+               )
+             ]
+
+  is-MulOp =
+    ?Mul()
+
+  prettyprint-MulOp :
+    Div() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("/")]
+               )
+             ]
+
+  is-MulOp =
+    ?Div()
+
+  prettyprint-MulOp :
+    Mod() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("%")]
+               )
+             ]
+
+  is-MulOp =
+    ?Mod()
+
+  prettyprint-AddExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-AddExp)
+    where t1__' := <pp-one-Z(prettyprint-MulExp)> t1__
+
+  prettyprint-AddExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-AddExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-AddOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-MulExp)> t3__
+
+  is-AddExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-AddOp :
+    Add() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("+")]
+               )
+             ]
+
+  is-AddOp =
+    ?Add()
+
+  prettyprint-AddOp :
+    Sub() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("-")]
+               )
+             ]
+
+  is-AddOp =
+    ?Sub()
+
+  prettyprint-ShiftExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-ShiftExp)
+    where t1__' := <pp-one-Z(prettyprint-AddExp)> t1__
+
+  prettyprint-ShiftExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-ShiftExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-ShiftOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-AddExp)> t3__
+
+  is-ShiftExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-ShiftOp :
+    LShift() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("<<")]
+                  )
+                ]
+
+  is-ShiftOp =
+    ?LShift()
+
+  prettyprint-ShiftOp :
+    RShift() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S(">>")]
+                  )
+                ]
+
+  is-ShiftOp =
+    ?RShift()
+
+  prettyprint-RelExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-RelExp)
+    where t1__' := <pp-one-Z(prettyprint-ShiftExp)> t1__
+
+  prettyprint-RelExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-RelExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-RelOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-ShiftExp)> t3__
+
+  is-RelExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-RelOp :
+    Lt() -> [ H(
+                [SOpt(HS(), "0")]
+              , [S("<")]
+              )
+            ]
+
+  is-RelOp =
+    ?Lt()
+
+  prettyprint-RelOp :
+    Gt() -> [ H(
+                [SOpt(HS(), "0")]
+              , [S(">")]
+              )
+            ]
+
+  is-RelOp =
+    ?Gt()
+
+  prettyprint-RelOp :
+    Lte() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("<=")]
+               )
+             ]
+
+  is-RelOp =
+    ?Lte()
+
+  prettyprint-RelOp :
+    Gte() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S(">=")]
+               )
+             ]
+
+  is-RelOp =
+    ?Gte()
+
+  prettyprint-EqExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-EqExp)
+    where t1__' := <pp-one-Z(prettyprint-RelExp)> t1__
+
+  prettyprint-EqExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-EqExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-EqOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-RelExp)> t3__
+
+  is-EqExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-EqOp :
+    Eq() -> [ H(
+                [SOpt(HS(), "0")]
+              , [S("==")]
+              )
+            ]
+
+  is-EqOp =
+    ?Eq()
+
+  prettyprint-EqOp :
+    Neq() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("!=")]
+               )
+             ]
+
+  is-EqOp =
+    ?Neq()
+
+  prettyprint-BAndExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-BAndExp)
+    where t1__' := <pp-one-Z(prettyprint-EqExp)> t1__
+
+  prettyprint-BAndExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-BAndExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-BAndOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-EqExp)> t3__
+
+  is-BAndExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-BAndOp :
+    BAnd() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("&")]
+                )
+              ]
+
+  is-BAndOp =
+    ?BAnd()
+
+  prettyprint-BXorExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-BXorExp)
+    where t1__' := <pp-one-Z(prettyprint-BAndExp)> t1__
+
+  prettyprint-BXorExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-BXorExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-BXorOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-BAndExp)> t3__
+
+  is-BXorExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-BXorOp :
+    BXor() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("^")]
+                )
+              ]
+
+  is-BXorOp =
+    ?BXor()
+
+  prettyprint-BOrExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-BOrExp)
+    where t1__' := <pp-one-Z(prettyprint-BXorExp)> t1__
+
+  prettyprint-BOrExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-BOrExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-BOrOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-BXorExp)> t3__
+
+  is-BOrExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-BOrOp :
+    BOr() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("|")]
+               )
+             ]
+
+  is-BOrOp =
+    ?BOr()
+
+  prettyprint-LAndExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-LAndExp)
+    where t1__' := <pp-one-Z(prettyprint-BOrExp)> t1__
+
+  prettyprint-LAndExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-LAndExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-LAndOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-BOrExp)> t3__
+
+  is-LAndExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-LAndOp :
+    LAnd() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("&&")]
+                )
+              ]
+
+  is-LAndOp =
+    ?LAnd()
+
+  is-CastExp =
+    fail
+
+  is-MulExp =
+    fail
+
+  is-MulOp =
+    fail
+
+  is-AddExp =
+    fail
+
+  is-AddOp =
+    fail
+
+  is-ShiftExp =
+    fail
+
+  is-ShiftOp =
+    fail
+
+  is-RelExp =
+    fail
+
+  is-RelOp =
+    fail
+
+  is-EqExp =
+    fail
+
+  is-EqOp =
+    fail
+
+  is-BAndExp =
+    fail
+
+  is-BAndOp =
+    fail
+
+  is-BXorExp =
+    fail
+
+  is-BXorOp =
+    fail
+
+  is-BOrExp =
+    fail
+
+  is-BOrOp =
+    fail
+
+  is-LAndExp =
+    fail
+
+  is-LAndOp =
+    fail
+
+
+strategies
+  prettyprint-example =
+    prettyprint-LOrExp
+
+  prettyprint-example =
+    prettyprint-LOrOp
+
+  prettyprint-LOrExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-LOrExp)
+    where t1__' := <pp-one-Z(prettyprint-LAndExp)> t1__
+
+  prettyprint-LOrExp :
+    BinOp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ")
+                                   , t2__'
+                                   , S(" ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-LOrExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-LOrOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-LAndExp)> t3__
+
+  is-LOrExp =
+    ?BinOp(_, _, _)
+
+  prettyprint-LOrOp :
+    LOr() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("||")]
+               )
+             ]
+
+  is-LOrOp =
+    ?LOr()
+
+  is-LOrExp =
+    fail
+
+  is-LOrOp =
+    fail
+
+
+strategies
+  prettyprint-example =
+    prettyprint-CondExp
+
+  prettyprint-example =
+    prettyprint-AssignExp
+
+  prettyprint-example =
+    prettyprint-AssignOp
+
+  prettyprint-example =
+    prettyprint-Exp
+
+  prettyprint-example =
+    prettyprint-ConstExp
+
+  prettyprint-CondExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-CondExp)
+    where t1__' := <pp-one-Z(prettyprint-LOrExp)> t1__
+
+  prettyprint-CondExp :
+    IfExp(t1__, t2__, t3__) -> [ H(
+                                   [SOpt(HS(), "0")]
+                                 , [ t1__'
+                                   , S(" ? ")
+                                   , t2__'
+                                   , S(" : ")
+                                   , t3__'
+                                   ]
+                                 )
+                               ]
+    with t1__' := <pp-one-Z(prettyprint-LOrExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-Exp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-CondExp)> t3__
+
+  is-CondExp =
+    ?IfExp(_, _, _)
+
+  prettyprint-AssignExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-AssignExp)
+    where t1__' := <pp-one-Z(prettyprint-CondExp)> t1__
+
+  prettyprint-AssignExp :
+    AssignExp(t1__, t2__, t3__) -> [ H(
+                                       [SOpt(HS(), "0")]
+                                     , [ t1__'
+                                       , S(" ")
+                                       , t2__'
+                                       , S(" ")
+                                       , t3__'
+                                       ]
+                                     )
+                                   ]
+    with t1__' := <pp-one-Z(prettyprint-UnaryExp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-AssignOp)> t2__
+    with t3__' := <pp-one-Z(prettyprint-AssignExp)> t3__
+
+  is-AssignExp =
+    ?AssignExp(_, _, _)
+
+  prettyprint-AssignOp :
+    Eq() -> [ H(
+                [SOpt(HS(), "0")]
+              , [S("=")]
+              )
+            ]
+
+  is-AssignOp =
+    ?Eq()
+
+  prettyprint-AssignOp :
+    Mul() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("*=")]
+               )
+             ]
+
+  is-AssignOp =
+    ?Mul()
+
+  prettyprint-AssignOp :
+    Div() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("/=")]
+               )
+             ]
+
+  is-AssignOp =
+    ?Div()
+
+  prettyprint-AssignOp :
+    Mod() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("%=")]
+               )
+             ]
+
+  is-AssignOp =
+    ?Mod()
+
+  prettyprint-AssignOp :
+    Add() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("+=")]
+               )
+             ]
+
+  is-AssignOp =
+    ?Add()
+
+  prettyprint-AssignOp :
+    Sub() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("-=")]
+               )
+             ]
+
+  is-AssignOp =
+    ?Sub()
+
+  prettyprint-AssignOp :
+    LShift() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S("<<=")]
+                  )
+                ]
+
+  is-AssignOp =
+    ?LShift()
+
+  prettyprint-AssignOp :
+    RShift() -> [ H(
+                    [SOpt(HS(), "0")]
+                  , [S(">>=")]
+                  )
+                ]
+
+  is-AssignOp =
+    ?RShift()
+
+  prettyprint-AssignOp :
+    BAnd() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("&=")]
+                )
+              ]
+
+  is-AssignOp =
+    ?BAnd()
+
+  prettyprint-AssignOp :
+    BXor() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("^=")]
+                )
+              ]
+
+  is-AssignOp =
+    ?BXor()
+
+  prettyprint-AssignOp :
+    BOr() -> [ H(
+                 [SOpt(HS(), "0")]
+               , [S("|=")]
+               )
+             ]
+
+  is-AssignOp =
+    ?BOr()
+
+  prettyprint-Exp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-Exp)
+    where t1__' := <pp-one-Z(prettyprint-AssignExp)> t1__
+
+  prettyprint-Exp :
+    Comma(t1__, t2__) -> [ H(
+                             [SOpt(HS(), "0")]
+                           , [t1__', S(", "), t2__']
+                           )
+                         ]
+    with t1__' := <pp-one-Z(prettyprint-Exp)> t1__
+    with t2__' := <pp-one-Z(prettyprint-AssignExp)> t2__
+
+  is-Exp =
+    ?Comma(_, _)
+
+  prettyprint-ConstExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-ConstExp)
+    where t1__' := <pp-one-Z(prettyprint-CondExp)> t1__
+
+  is-CondExp =
+    fail
+
+  is-AssignExp =
+    fail
+
+  is-AssignOp =
+    fail
+
+  is-Exp =
+    fail
+
+  is-ConstExp =
+    fail

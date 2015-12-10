@@ -1,0 +1,31 @@
+module src-gen/pp/C-pp
+
+imports
+  libstratego-gpp
+  runtime/tmpl/pp
+  src-gen/signatures/C-sig
+
+
+imports
+  src-gen/signatures/Declarations-sig
+  src-gen/signatures/Expressions-sig
+  src-gen/signatures/ExternalDefinitions-sig
+  src-gen/signatures/Keywords-sig
+  src-gen/signatures/Lexical-sig
+  src-gen/signatures/Preprocessor-sig
+  src-gen/signatures/Statements-sig
+
+
+imports
+  src-gen/pp/Declarations-pp
+  src-gen/pp/Expressions-pp
+  src-gen/pp/ExternalDefinitions-pp
+  src-gen/pp/Keywords-pp
+  src-gen/pp/Lexical-pp
+  src-gen/pp/Preprocessor-pp
+  src-gen/pp/Statements-pp
+
+
+strategies
+  prettyprint-SDF-start-symbols =
+    prettyprint-TranslationUnit

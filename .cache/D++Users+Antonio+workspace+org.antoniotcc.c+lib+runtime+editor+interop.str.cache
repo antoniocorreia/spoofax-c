@@ -1,0 +1,1 @@
+Module("runtime/editor/interop",[Rules([SDefT("foreign-call",[],[DefaultVarDec("lang"),DefaultVarDec("strategy")],Prim("\"SSL_EXT_foreigncall\"",[Var("lang"),Var("strategy")]))])])

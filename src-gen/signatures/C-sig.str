@@ -1,0 +1,13 @@
+module src-gen/signatures/C-sig
+
+imports
+  src-gen/signatures/Declarations-sig
+  src-gen/signatures/Expressions-sig
+  src-gen/signatures/ExternalDefinitions-sig
+  src-gen/signatures/Keywords-sig
+  src-gen/signatures/Lexical-sig
+  src-gen/signatures/Preprocessor-sig
+  src-gen/signatures/Statements-sig
+
+
+signature

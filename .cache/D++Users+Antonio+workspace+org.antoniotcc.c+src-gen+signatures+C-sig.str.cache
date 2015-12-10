@@ -1,0 +1,1 @@
+Module("src-gen/signatures/C-sig",[Imports([Import("src-gen/signatures/Declarations-sig"),Import("src-gen/signatures/Expressions-sig"),Import("src-gen/signatures/ExternalDefinitions-sig"),Import("src-gen/signatures/Keywords-sig"),Import("src-gen/signatures/Lexical-sig"),Import("src-gen/signatures/Preprocessor-sig"),Import("src-gen/signatures/Statements-sig")]),Signature([])])

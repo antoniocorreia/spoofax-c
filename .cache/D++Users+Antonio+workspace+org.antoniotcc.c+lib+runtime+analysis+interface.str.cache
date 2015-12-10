@@ -1,0 +1,1 @@
+Module("runtime/analysis/interface",[Rules([SDefNoArgs("analysis-interface",Fail),SDefNoArgs("analysis-pre-trans",Fail),SDefT("analysis-post-trans",[],[DefaultVarDec("ctx")],Fail),SDefNoArgs("analysis-disable-persist",Fail),SDefNoArgs("analysis-builtin-partitions",Fail)])])

@@ -1,0 +1,10 @@
+module src-gen/completions/C-esv
+
+imports
+  src-gen/completions/Declarations-esv
+  src-gen/completions/Expressions-esv
+  src-gen/completions/ExternalDefinitions-esv
+  src-gen/completions/Keywords-esv
+  src-gen/completions/Lexical-esv
+  src-gen/completions/Preprocessor-esv
+  src-gen/completions/Statements-esv

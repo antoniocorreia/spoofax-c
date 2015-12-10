@@ -1,0 +1,1 @@
+Module("runtime/editor/dynrule",[Rules([SDefNoArgs("editor-init",Seq(Call(SVar("try"),[CallNoArgs(SVar("dr-scope-all-end"))]),CallNoArgs(SVar("dr-scope-all-start"))))])])

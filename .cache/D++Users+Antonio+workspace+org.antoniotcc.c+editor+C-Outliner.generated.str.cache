@@ -1,0 +1,1 @@
+Module("editor/C-Outliner.generated",[Imports([Import("include/C"),Import("lib/runtime/editor/outline-library")]),Rules([SDefNoArgs("to-outline-label",Fail)])])

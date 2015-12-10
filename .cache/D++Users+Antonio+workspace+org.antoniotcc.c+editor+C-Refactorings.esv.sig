@@ -1,0 +1,1 @@
+Module("C-Refactorings",Imports([Import("C-Refactorings.generated")]),[Refactorings("",[TextReconstruction(Strategy("construct-textual-change")),Refactoring([Sort("ID")],String("\"Rename Entity\""),Strategy("rename-refactoring"),[Cursor],[Shortcut(KeyCombination(["Shift","Alt","R"])),UserInput([IdInputField(String("\"new name\""),String("\"\""))])])])])

@@ -1,0 +1,14 @@
+module src-gen/pp/Keywords-pp
+
+imports
+  libstratego-gpp
+  runtime/tmpl/pp
+  src-gen/signatures/Keywords-sig
+
+
+strategies
+  prettyprint-Keyword =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-Keyword

@@ -1,0 +1,314 @@
+module src-gen/pp/Lexical-pp
+
+imports
+  libstratego-gpp
+  runtime/tmpl/pp
+  src-gen/signatures/Lexical-sig
+
+
+imports
+  src-gen/signatures/Keywords-sig
+
+
+imports
+  src-gen/pp/Keywords-pp
+
+
+strategies
+  prettyprint-Asterisk =
+    ![S(<is-string>)]
+
+  prettyprint-Comment =
+    ![S(<is-string>)]
+
+  prettyprint-EOF =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-Asterisk
+
+  prettyprint-example =
+    prettyprint-Comment
+
+  prettyprint-example =
+    prettyprint-EOF
+
+
+strategies
+  prettyprint-Comma =
+    ![S(<is-string>)]
+
+  prettyprint-Sign =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-Comma
+
+  prettyprint-example =
+    prettyprint-Sign
+
+
+strategies
+  prettyprint-Id =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-Id
+
+
+strategies
+  prettyprint-example =
+    prettyprint-Constant
+
+  prettyprint-Constant :
+    CharConst(t1__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [t1__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-CharConst)> t1__
+
+  is-Constant =
+    ?CharConst(_)
+
+  prettyprint-Constant :
+    IntConst(t1__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [t1__']
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-IntConst)> t1__
+
+  is-Constant =
+    ?IntConst(_)
+
+  prettyprint-Constant :
+    OctConst(t1__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [t1__']
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-OctConst)> t1__
+
+  is-Constant =
+    ?OctConst(_)
+
+  prettyprint-Constant :
+    HexConst(t1__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [t1__']
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-HexConst)> t1__
+
+  is-Constant =
+    ?HexConst(_)
+
+  prettyprint-Constant :
+    FloatConst(t1__) -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [t1__']
+                          )
+                        ]
+    with t1__' := <pp-one-Z(prettyprint-FloatConst)> t1__
+
+  is-Constant =
+    ?FloatConst(_)
+
+  prettyprint-Constant :
+    StringConst(t1__) -> [ H(
+                             [SOpt(HS(), "0")]
+                           , [t1__']
+                           )
+                         ]
+    with t1__' := <pp-one-Z(prettyprint-StringConst)> t1__
+
+  is-Constant =
+    ?StringConst(_)
+
+  is-Constant =
+    fail
+
+
+strategies
+  prettyprint-IntConst =
+    ![S(<is-string>)]
+
+  prettyprint-IntSuffix =
+    ![S(<is-string>)]
+
+  prettyprint-UnsignedSuffix =
+    ![S(<is-string>)]
+
+  prettyprint-LongSuffix =
+    ![S(<is-string>)]
+
+  prettyprint-LongLongSuffix =
+    ![S(<is-string>)]
+
+  prettyprint-Digit =
+    ![S(<is-string>)]
+
+  prettyprint-NonzeroDigit =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-IntConst
+
+  prettyprint-example =
+    prettyprint-IntSuffix
+
+  prettyprint-example =
+    prettyprint-UnsignedSuffix
+
+  prettyprint-example =
+    prettyprint-LongSuffix
+
+  prettyprint-example =
+    prettyprint-LongLongSuffix
+
+  prettyprint-example =
+    prettyprint-Digit
+
+  prettyprint-example =
+    prettyprint-NonzeroDigit
+
+
+strategies
+  prettyprint-OctConst =
+    ![S(<is-string>)]
+
+  prettyprint-OctDigit =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-OctConst
+
+  prettyprint-example =
+    prettyprint-OctDigit
+
+
+strategies
+  prettyprint-HexConst =
+    ![S(<is-string>)]
+
+  prettyprint-HexPrefix =
+    ![S(<is-string>)]
+
+  prettyprint-HexDigit =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-HexConst
+
+  prettyprint-example =
+    prettyprint-HexPrefix
+
+  prettyprint-example =
+    prettyprint-HexDigit
+
+
+strategies
+  prettyprint-FloatConst =
+    ![S(<is-string>)]
+
+  prettyprint-DecFloatConst =
+    ![S(<is-string>)]
+
+  prettyprint-FracConst =
+    ![S(<is-string>)]
+
+  prettyprint-ExpPart =
+    ![S(<is-string>)]
+
+  prettyprint-BinExpPart =
+    ![S(<is-string>)]
+
+  prettyprint-HexFloatConst =
+    ![S(<is-string>)]
+
+  prettyprint-HexFracConst =
+    ![S(<is-string>)]
+
+  prettyprint-FloatSuffix =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-FloatConst
+
+  prettyprint-example =
+    prettyprint-DecFloatConst
+
+  prettyprint-example =
+    prettyprint-FracConst
+
+  prettyprint-example =
+    prettyprint-ExpPart
+
+  prettyprint-example =
+    prettyprint-BinExpPart
+
+  prettyprint-example =
+    prettyprint-HexFloatConst
+
+  prettyprint-example =
+    prettyprint-HexFracConst
+
+  prettyprint-example =
+    prettyprint-FloatSuffix
+
+
+strategies
+  prettyprint-UniCharName =
+    ![S(<is-string>)]
+
+  prettyprint-HexQuad =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-UniCharName
+
+  prettyprint-example =
+    prettyprint-HexQuad
+
+
+strategies
+  prettyprint-EscSeq =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-EscSeq
+
+
+strategies
+  prettyprint-CharConst =
+    ![S(<is-string>)]
+
+  prettyprint-Char =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-CharConst
+
+  prettyprint-example =
+    prettyprint-Char
+
+
+strategies
+  prettyprint-StringConst =
+    ![S(<is-string>)]
+
+  prettyprint-EncPrefix =
+    ![S(<is-string>)]
+
+  prettyprint-SChar =
+    ![S(<is-string>)]
+
+  prettyprint-example =
+    prettyprint-StringConst
+
+  prettyprint-example =
+    prettyprint-EncPrefix
+
+  prettyprint-example =
+    prettyprint-SChar

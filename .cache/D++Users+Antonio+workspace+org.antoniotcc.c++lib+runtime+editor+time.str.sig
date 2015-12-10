@@ -1,0 +1,1 @@
+Module("runtime/analysis/time",[Rules([SDefT("cputime",[],[],[]),SDefT("cputime-to-seconds",[],[],[]),SDefT("measure-time",[VarDec("s",ConstType(SortNoArgs("ATerm"))),VarDec("match",ConstType(SortNoArgs("ATerm")))],[],[])])])

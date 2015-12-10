@@ -1,0 +1,35 @@
+// Grammar for the C language
+// By default, based on an example "entity language" syntax
+
+module C
+
+imports 
+
+	%% C-Keywords
+    %% C-Constants
+    %% C-Lexical
+    %% C-Preprocessor
+    %% C-Declarators
+    %% C-Program
+    %% C-Statements
+    %% C-Identifiers
+    %% C-Types
+    %% C-Expressions
+    %% C-StructsAndUnions
+    %% C-Enumerators
+    %% C-ParameterDeclarators
+    %% C-AbstractDeclarators
+    
+    Declarations
+    Expressions
+    ExternalDefinitions
+    Keywords
+    Lexical
+    Preprocessor
+    Statements
+
+context-free start-symbols
+
+	TranslationUnit
+
+
